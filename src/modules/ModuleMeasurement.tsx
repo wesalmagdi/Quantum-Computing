@@ -6,6 +6,7 @@ import AmplitudeControls from '@/components/AmplitudeControls';
 import VideoPlayer from '@/components/VideoPlayer';
 import ModuleQuiz from '@/components/ModuleQuiz';
 import QuantumDiceVisual from '@/components/visuals/QuantumDiceVisual';
+import HistoryCard from '@/components/HistoryCard';
 import { runTrials, getProbabilities } from '@/lib/quantum';
 import { moduleContent } from '@/lib/content';
 
@@ -43,6 +44,14 @@ export default function ModuleMeasurement() {
           you have set.
         </p>
       </div>
+
+      <HistoryCard
+        concept="The collapse of a quantum state upon observation"
+        items={[
+          { year: 1926, scientist: 'Max Born', story: 'Proposed the statistical interpretation of the wavefunction — that |psi|<sup>2</sup> gives the probability of finding a particle at a given position, not the particle\'s definite location. This was a radical departure from classical determinism. Born received the 1954 Nobel Prize for this work, which remains one of the most philosophically debated ideas in all of science.', quote: { text: 'The motion of particles follows probability laws, but the probability itself propagates according to the law of causality.', source: 'Max Born, 1926' } },
+          { year: 1927, scientist: 'Werner Heisenberg', story: 'Formulated the uncertainty principle, showing that the more precisely you measure a particle\'s position, the less precisely you can know its momentum — and vice versa. This is not a limitation of instruments but a fundamental feature of reality. Heisenberg was 26 years old when he published this, and he won the Nobel Prize at 31.', quote: { text: 'The more precisely the position is determined, the less precisely the momentum is known in this instant, and vice versa.', source: 'Werner Heisenberg, 1927' } },
+        ]}
+      />
 
       <div className="bg-quantum-card rounded-xl p-6 border border-gray-800/60">
         <AmplitudeControls theta={theta} phi={phi} onThetaChange={setTheta} onPhiChange={setPhi} disabled={running} />

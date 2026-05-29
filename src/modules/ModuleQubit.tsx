@@ -7,6 +7,7 @@ import ProbabilityDisplay from '@/components/ProbabilityDisplay';
 import StateDisplay from '@/components/StateDisplay';
 import VideoPlayer from '@/components/VideoPlayer';
 import ModuleQuiz from '@/components/ModuleQuiz';
+import HistoryCard from '@/components/HistoryCard';
 import { moduleContent } from '@/lib/content';
 
 export default function ModuleQubit() {
@@ -26,6 +27,14 @@ export default function ModuleQubit() {
           This section explores what that actually means.
         </p>
       </div>
+
+      <HistoryCard
+        concept="The qubit as a unit of quantum information"
+        items={[
+          { year: 1995, scientist: 'Benjamin Schumacher', story: 'Coined the term "qubit" (short for "quantum bit") in a paper titled "Quantum Coding." He showed that quantum information could be compressed, establishing the first rigorous connection between information theory and quantum mechanics — founding the field of quantum information theory in the process.', quote: { text: 'Information is physical.', source: 'Rolf Landauer, 1991' } },
+          { year: 1985, scientist: 'David Deutsch', story: 'Published "Quantum Theory, the Church-Turing Principle and the Universal Quantum Computer," formalizing the concept of a universal quantum computer and proving that quantum computation could solve problems no classical computer ever could. He showed that a qubit is fundamentally different from a probabilistic classical bit because of interference.', quote: { text: 'The quantum theory of computation brings together two of the great intellectual achievements of the twentieth century — quantum theory and computing.', source: 'David Deutsch' } },
+        ]}
+      />
 
       <div className="bg-quantum-card rounded-xl p-6 border border-gray-800/60">
         <div className="text-center mb-6">

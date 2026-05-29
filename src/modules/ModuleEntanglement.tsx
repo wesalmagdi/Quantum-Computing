@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import VideoPlayer from '@/components/VideoPlayer';
 import ModuleQuiz from '@/components/ModuleQuiz';
 import GloveAnalogyVisual from '@/components/visuals/GloveAnalogyVisual';
+import HistoryCard from '@/components/HistoryCard';
 import { moduleContent } from '@/lib/content';
 
 type QubitState = 'mixed' | 0 | 1;
@@ -58,6 +59,15 @@ export default function ModuleEntanglement() {
           thousands of times.
         </p>
       </div>
+
+      <HistoryCard
+        concept="The non-local connection between quantum particles"
+        items={[
+          { year: 1935, scientist: 'Einstein, Podolsky, Rosen', story: 'Published the EPR paper challenging whether quantum mechanics was a complete theory. They argued that entanglement implied "spooky action at a distance" — instantaneous influence across any distance — which they considered impossible. The paper became the most cited quantum mechanics foundational paper in history, though Einstein himself called entanglement "spooky" and refused to believe it was real.', quote: { text: 'I cannot seriously believe in quantum theory because it cannot be reconciled with the idea that physics should represent a reality in time and space, without spooky action at a distance.', source: 'Albert Einstein, letter to Max Born, 1947' } },
+          { year: 1964, scientist: 'John Bell', story: 'Derived Bell\'s inequality — a mathematical theorem that could experimentally decide whether entanglement was real or whether Einstein\'s "hidden variables" explained it. Bell was working at CERN on particle physics when he published this in his spare time. His inequality turned a philosophical debate into an experimentally testable question.', quote: { text: 'For me, it is so reasonable to assume that the photons in those experiments carry with them programs, which have been correlated in advance, telling them how to behave. But this is crazy. And yet, the experiments say it ain\'t so.', source: 'John Bell' } },
+          { year: 1982, scientist: 'Alain Aspect', story: 'Performed the first conclusive experimental test of Bell\'s inequality using entangled photons. The results definitively showed that Einstein was wrong — entanglement is real, and the universe is fundamentally non-local. Aspect\'s experiments have been replicated hundreds of times since, with ever more stringent conditions, and the result never changes.', quote: { text: 'It is hard to renounce the intuitive idea that distant events are independent ... but the experiments force us to accept that the world is fundamentally quantum.', source: 'Alain Aspect' } },
+        ]}
+      />
 
       <GloveAnalogyVisual showResult={measuredA} />
 

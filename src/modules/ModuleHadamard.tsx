@@ -6,6 +6,7 @@ import BlochSphere from '@/components/BlochSphere';
 import ProbabilityDisplay from '@/components/ProbabilityDisplay';
 import VideoPlayer from '@/components/VideoPlayer';
 import ModuleQuiz from '@/components/ModuleQuiz';
+import HistoryCard from '@/components/HistoryCard';
 import { applyHadamard, getProbabilities } from '@/lib/quantum';
 import { moduleContent } from '@/lib/content';
 
@@ -53,6 +54,14 @@ export default function ModuleHadamard() {
           Almost every quantum algorithm starts with Hadamard gates.
         </p>
       </div>
+
+      <HistoryCard
+        concept="The gate that creates superposition"
+        items={[
+          { year: 1893, scientist: 'Jacques Hadamard', story: 'The French mathematician studied the transform that now bears his name — a matrix of +1 and -1 entries that maps a set of values onto a set of "alternating sums." Hadamard was a prolific mathematician who also contributed to prime number theory and the study of determinants, though he likely never imagined his transform would one day become a quantum logic gate.', quote: { text: 'The shortest path between two truths in the real domain passes through the complex domain.', source: 'Jacques Hadamard' } },
+          { year: 1867, scientist: 'James Sylvester', story: 'Discovered the underlying mathematical structure of the Hadamard transform decades before Hadamard himself. Sylvester\'s "pavement" matrices were recursively constructed and identical to what we now call the Hadamard matrices used in quantum gates — a classic case of mathematics being discovered long before its physical application.', quote: { text: 'The music of the spheres is not limited to sound; it can be seen in the very structure of number.', source: 'James Sylvester' } },
+        ]}
+      />
 
       <div className="bg-quantum-card rounded-xl p-6 border border-gray-800/60">
         <div className="grid md:grid-cols-2 gap-5">

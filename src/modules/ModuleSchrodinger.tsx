@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import VideoPlayer from '@/components/VideoPlayer';
 import ModuleQuiz from '@/components/ModuleQuiz';
 import SchrodingerCatVisual from '@/components/visuals/SchrodingerCatVisual';
+import HistoryCard from '@/components/HistoryCard';
 import { moduleContent } from '@/lib/content';
 
 export default function ModuleSchrodinger() {
@@ -54,6 +55,14 @@ export default function ModuleSchrodinger() {
           and from that wavefunction, we can extract everything knowable about a quantum system.
         </p>
       </div>
+
+      <HistoryCard
+        concept="The fundamental law of quantum time evolution"
+        items={[
+          { year: 1926, scientist: 'Erwin Schrodinger', story: 'Published his famous wave equation in a series of four papers written in just six months. He was 38 years old, and the equation came to him during a Christmas holiday in the Swiss Alps with his mistress. Within weeks, physicists used it to predict the energy levels of the hydrogen atom with stunning accuracy — matching experimental data that had baffled science for decades. Schrodinger won the Nobel Prize in 1933 alongside Paul Dirac.', quote: { text: 'I do not like this modern quantum mechanics. I am sorry I ever had anything to do with it.', source: 'Erwin Schrodinger, late in life' } },
+          { year: 1935, scientist: 'Schrodinger\'s Cat', story: 'Schrodinger devised the cat paradox not as a serious proposal but as a reductio ad absurdum — a way to show that the Copenhagen interpretation led to absurd conclusions when applied to everyday objects. Ironically, the thought experiment became more famous than the equation that made him a Nobel laureate, and it remains the most popular gateway into quantum philosophy.', quote: { text: 'The task is not to see what no one has yet seen, but to think what nobody has yet thought about that which everybody sees.', source: 'Erwin Schrodinger' } },
+        ]}
+      />
 
       <div className="bg-quantum-card rounded-xl p-6 border border-gray-800/60">
         <div className="text-center mb-6">

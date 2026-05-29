@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import VideoPlayer from '@/components/VideoPlayer';
 import ModuleQuiz from '@/components/ModuleQuiz';
 import BitVsQubitVisual from '@/components/visuals/BitVsQubitVisual';
+import HistoryCard from '@/components/HistoryCard';
 import { moduleContent } from '@/lib/content';
 
 export default function ModuleIntro() {
@@ -23,6 +24,14 @@ export default function ModuleIntro() {
           Let us start with what you already know.
         </p>
       </div>
+
+      <HistoryCard
+        concept="The bridge between classical and quantum computing"
+        items={[
+          { year: 1939, scientist: 'Paul Dirac', story: 'Invented bra-ket notation at age 37, giving us the |\u27E9 symbols that encode quantum states. Dirac shared the 1933 Nobel Prize with Erwin Schrodinger for discovering that quantum mechanics and relativity could be unified. He called the notation a "bra(c)ket" as a pun — combining "bra" and "ket" to form "bracket."', quote: { text: 'Pick a flower on Earth and you move the farthest star.', source: 'Paul Dirac' } },
+          { year: 1981, scientist: 'Richard Feynman', story: 'Delivered a visionary lecture at MIT titled "Simulating Physics with Computers," arguing that nature is not classical and that a fundamentally quantum computer would be needed to simulate quantum systems. This lecture is widely considered the birth of quantum computing as a field.', quote: { text: 'Nature isn\'t classical, dammit, and if you want to simulate nature, you\'d better make it quantum mechanical.', source: 'Richard Feynman, 1981' } },
+        ]}
+      />
 
       <BitVsQubitVisual
         bitValue={bitValue}

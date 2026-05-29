@@ -9,6 +9,7 @@ import MeasureButton from '@/components/MeasureButton';
 import IntuitionCard from '@/components/IntuitionCard';
 import VideoPlayer from '@/components/VideoPlayer';
 import ModuleQuiz from '@/components/ModuleQuiz';
+import HistoryCard from '@/components/HistoryCard';
 import { moduleContent } from '@/lib/content';
 
 export default function ModuleSuperposition() {
@@ -56,6 +57,14 @@ export default function ModuleSuperposition() {
           <span className="text-quantum-magenta"> |1&gt;</span>, and everything in between is a unique blend.
         </p>
       </div>
+
+      <HistoryCard
+        concept="The ability of a quantum system to exist in multiple states at once"
+        items={[
+          { year: 1935, scientist: 'Erwin Schrodinger', story: 'Published a paper titled "The Present Situation in Quantum Mechanics" in which he introduced the now-famous cat thought experiment to argue that superposition cannot literally apply to macroscopic objects. The paper was written in German and was a direct critique of the Copenhagen interpretation. It was here that the word "superposition" entered the quantum lexicon.', quote: { text: 'One can even set up quite ridiculous cases. A cat is penned up in a steel chamber... The psi-function of the entire system would express this by having in it the living and dead cat mixed or smeared out in equal parts.', source: 'Erwin Schrodinger, 1935' } },
+          { year: 1801, scientist: 'Thomas Young', story: 'Performed the double-slit experiment, the first recorded demonstration of wave-like superposition. Though he was studying light, not quantum mechanics, his experiment became the archetype for all subsequent superposition thought experiments. Over a century later, physicists would repeat it with single electrons, confirming that superposition is real — not just a mathematical fiction.', quote: { text: 'The experiments I am about to relate... may be repeated with great ease, whenever the sun shines.', source: 'Thomas Young, 1801' } },
+        ]}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         <div className="lg:col-span-3 bg-quantum-card rounded-xl border border-gray-800/60 overflow-hidden">

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import BlochSphere from '@/components/BlochSphere';
 import VideoPlayer from '@/components/VideoPlayer';
 import ModuleQuiz from '@/components/ModuleQuiz';
+import HistoryCard from '@/components/HistoryCard';
 import { applyPauliX, getProbabilities } from '@/lib/quantum';
 import { moduleContent } from '@/lib/content';
 
@@ -55,6 +56,13 @@ export default function ModulePauliX() {
           On the Bloch sphere, it is a crisp 180&deg; rotation around the X axis.
         </p>
       </div>
+
+      <HistoryCard
+        concept="The quantum equivalent of a NOT gate"
+        items={[
+          { year: 1927, scientist: 'Wolfgang Pauli', story: 'Introduced the three Pauli matrices (sigma_x, sigma_y, sigma_z) to describe the spin of an electron — a purely quantum property with no classical analogue. The Pauli-X matrix, sigma_x, is the flip operator that exchanges spin-up and spin-down. Pauli was only 25 when he made this contribution. He won the 1945 Nobel Prize for the Pauli exclusion principle.', quote: { text: 'I don\'t mind your thinking slowly; I mind your publishing faster than you think.', source: 'Wolfgang Pauli' } },
+        ]}
+      />
 
       <div className="bg-quantum-card rounded-xl p-6 border border-gray-800/60">
         <div className="bg-black/30 rounded-lg p-4 border border-gray-800/40 mb-5">

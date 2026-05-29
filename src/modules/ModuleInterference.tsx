@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import VideoPlayer from '@/components/VideoPlayer';
 import ModuleQuiz from '@/components/ModuleQuiz';
 import DoubleSlitVisual from '@/components/visuals/DoubleSlitVisual';
+import HistoryCard from '@/components/HistoryCard';
 import { moduleContent } from '@/lib/content';
 
 function WaveSVG({ phase, label, color, amp }: { phase: number; label: string; color: string; amp: number }) {
@@ -81,6 +82,14 @@ export default function ModuleInterference() {
           and <em className="text-gray-300">wrong answers cancel</em>.
         </p>
       </div>
+
+      <HistoryCard
+        concept="The wave-like combination of quantum amplitudes"
+        items={[
+          { year: 1801, scientist: 'Thomas Young', story: 'Performed the double-slit experiment before the Royal Institution in London, demonstrating that light behaves as a wave. His experiment was so elegantly simple that anyone could repeat it — a single light source, two slits, and a screen. The interference pattern he observed became the central metaphor for quantum behavior nearly two centuries later.', quote: { text: 'I am happy to find that I have been able to confirm, by a new and decisive experiment, the law which I had formerly deduced.', source: 'Thomas Young, 1801' } },
+          { year: 1965, scientist: 'Richard Feynman', story: 'Called the double-slit experiment "the only mystery" of quantum mechanics in his famous Feynman Lectures on Physics. He argued that the experiment contains the entire essence of quantum behavior — superposition, interference, and the strange role of measurement — and that anyone who claims to understand quantum mechanics must first come to terms with it.', quote: { text: 'It has in it the heart of quantum mechanics. In reality, it contains the only mystery.', source: 'Richard Feynman, on the double-slit experiment' } },
+        ]}
+      />
 
       <DoubleSlitVisual />
 
