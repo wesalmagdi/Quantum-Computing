@@ -58,12 +58,12 @@ export default function ModuleSchrodinger() {
       <div className="bg-quantum-card rounded-xl p-6 border border-gray-800/60">
         <div className="text-center mb-6">
           <div className="inline-block bg-black/40 rounded-lg px-6 py-4 border border-gray-800/50">
-            <span className="text-xl md:text-2xl font-serif italic text-gray-300">i\u210F</span>
-            <span className="text-xl md:text-2xl text-gray-500 font-serif italic"> part</span>
-            <span className="text-lg md:text-xl text-gray-400 font-serif">|psi&gt;</span>
-            <span className="text-xl md:text-2xl text-gray-500 font-serif italic"> / part t = </span>
-            <span className="text-xl md:text-2xl font-serif italic text-quantum-purple">H</span>
-            <span className="text-lg md:text-xl text-gray-400 font-serif"> |psi&gt;</span>
+            <span className="text-xl md:text-2xl font-serif italic text-gray-300">{'i\u210F'}</span>
+            <span className="text-xl md:text-2xl text-gray-500 font-serif italic">{'\u2202'}</span>
+            <span className="text-lg md:text-xl text-gray-400 font-serif">{'|\u03C8\u27E9'}</span>
+            <span className="text-xl md:text-2xl text-gray-500 font-serif italic">{' / \u2202t = '}</span>
+            <span className="text-xl md:text-2xl font-serif italic text-quantum-purple">{'\u0124'}</span>
+            <span className="text-lg md:text-xl text-gray-400 font-serif">{' |\u03C8\u27E9'}</span>
           </div>
         </div>
 
