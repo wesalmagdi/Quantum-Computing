@@ -2,28 +2,32 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-const G = 0.5, JV = -12, JH = -0.3, MH = 350;
-const BS = 2, SR = 0.0003, MS = 12;
-const WW = 600, B = 30, PW = 30, PH = 52;
-const GAP = [65, 90];
+const G = 0.45, JV = -11, JH = -0.28;
+const BS = 2, SR = 0.00035, MS = 13;
+const WW = 600, PH = 52, PW = 30, PHit = 14;
+const GAP = [60, 95];
 const CM = 2000;
 
 function rnd(a: number, b: number) { return Math.random() * (b - a) + a; }
 function ri(a: number, b: number) { return Math.floor(rnd(a, b + 1)); }
 
-function mkPlat(y: number, prev?: { x: number; w: number }) {
-  let w = ri(4, 9) * B;
-  let x = prev ? Math.max(0, Math.min(prev.x + rnd(-90, 90), WW - w)) : rnd(0, WW - w);
+function mkPlat(y: number, prev?: { x: number; w: number }, wide = false) {
+  const w = wide ? WW : ri(5, 11) * 28;
+  const x = prev ? Math.max(0, Math.min(prev.x + rnd(-100, 100), WW - w)) : rnd(0, WW - w);
   return { x, y, w, hit: false };
 }
 
 function newG() {
   const pl: any[] = [];
-  for (let i = 0; i < 10; i++) pl.push(mkPlat(-i * rnd(GAP[0], GAP[1])));
-  return { s: 'menu', px: WW / 2, py: 0, vy: 0, pl, cam: 0, spd: BS, scr: 0, co: 0, bc: 0, hi: 0, hd: false, fl: false, rot: 0, fs: 0, fr: 0, ft: 0, dir: 1 };
+  for (let i = 0; i < 12; i++) pl.push(mkPlat(-i * rnd(GAP[0], GAP[1]), undefined, i < 3));
+  return {
+    s: 'menu', px: WW / 2, py: 0, vy: 0, pl, cam: 0, spd: BS,
+    scr: 0, co: 0, bc: 0, hi: 0,
+    hd: false, fl: false, rot: 0, fr: 0, ft: 0, dir: 1,
+  };
 }
 
-const SN = ['idle1','idle2','idle3','walk1','walk2','walk3','walk4','jump','rotate','chock','edge1','edge2'];
+const SN = ['idle1','idle2','idle3','walk1','walk2','walk3','walk4','jump','rotate'];
 const VL = ['good','great','amazing','fantastic','splendid','extreme','super','sweet','wow','yo','cheer'];
 
 function sfx(n: string) { try { const a = new Audio('/icy/' + n + '.ogg'); a.volume = 0.5; a.play(); } catch {} }
@@ -39,14 +43,6 @@ export default function Page() {
   const ra = useRef(0);
   const [hi, setHi] = useState(0);
   const [fs, setFs] = useState(false);
-  const [dbg, setDbg] = useState('init');
-
-  function bgm(on: boolean) {
-    if (on) {
-      if (!bg.current) { bg.current = new Audio('/icy/bg_beat.ogg'); bg.current.loop = true; bg.current.volume = 0.3; }
-      bg.current.currentTime = 0; bg.current.play();
-    } else { bg.current?.pause(); }
-  }
 
   useEffect(() => {
     for (const n of SN) { const i = new Image(); i.src = '/icy/' + n + '.png'; im.current[n] = i; }
@@ -64,52 +60,39 @@ export default function Page() {
     c.height = document.fullscreenElement ? window.innerHeight : Math.min(600, window.innerHeight - 280);
   };
 
+  function bgm(on: boolean) {
+    if (on) {
+      if (!bg.current) { bg.current = new Audio('/icy/bg_beat.ogg'); bg.current.loop = true; bg.current.volume = 0.3; }
+      bg.current.currentTime = 0; bg.current.play();
+    } else { bg.current?.pause(); }
+  }
+
   function reset() {
     const n = newG(); n.hi = g.current.hi;
-    g.current.s = n.s; g.current.px = n.px; g.current.py = n.py; g.current.vy = n.vy;
-    g.current.pl = n.pl; g.current.cam = n.cam; g.current.spd = n.spd;
-    g.current.scr = n.scr; g.current.co = n.co; g.current.bc = n.bc;
-    g.current.hd = n.hd; g.current.fl = n.fl; g.current.rot = n.rot;
-    g.current.fs = n.fs; g.current.fr = n.fr; g.current.ft = n.ft;
+    Object.assign(g.current, n);
     g.current.s = 'play'; g.current.dir = 1;
     const p = g.current.pl[0];
-    if (p) { g.current.px = p.x + p.w / 2 - PW / 2; g.current.py = p.y - PH; }
-    console.log('[ICY] reset done, state:', g.current.s, 'platforms:', g.current.pl.length, 'py:', g.current.py);
+    if (p) { g.current.px = p.w / 2 - PW / 2; g.current.py = p.y - PH; }
   }
 
   useEffect(() => {
     const c = cv.current; if (!c) return;
-    console.log('[ICY] mount, canvas:', c);
     window.addEventListener('resize', resize); resize();
     g.current.s = 'menu'; g.current.hi = hi;
-    setDbg('mounted');
 
     function dk(e: KeyboardEvent) {
       if (e.repeat) return;
       k.current.add(e.code === 'Space' ? ' ' : e.code);
-      if (e.code === 'KeyF') {
-        const el = wr.current;
-        if (el) { document.fullscreenElement ? document.exitFullscreen() : el.requestFullscreen(); }
-        return;
-      }
-      console.log('[ICY] keydown', e.code, 'state:', g.current.s);
-      if (g.current.s === 'menu' && (e.code === 'Space' || e.code === 'Enter')) {
-        e.preventDefault();
-        console.log('[ICY] starting game from key');
-        reset();
-        bgm(true);
-      } else if (g.current.s === 'over') {
+      if (e.code === 'KeyF') { const el = wr.current; if (el) { document.fullscreenElement ? document.exitFullscreen() : el.requestFullscreen(); } return; }
+      if (g.current.s === 'menu' && (e.code === 'Space' || e.code === 'Enter')) { e.preventDefault(); reset(); bgm(true); }
+      else if (g.current.s === 'over') {
         if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); reset(); bgm(true); }
-        if (e.code === 'Escape') { g.current.s = 'menu'; setDbg('menu'); }
+        if (e.code === 'Escape') g.current.s = 'menu';
       }
     }
+    function uk(e: KeyboardEvent) { k.current.delete(e.code === 'Space' ? ' ' : e.code); }
 
-    function uk(e: KeyboardEvent) {
-      k.current.delete(e.code === 'Space' ? ' ' : e.code);
-    }
-
-    function cl(e: MouseEvent) {
-      console.log('[ICY] click, state:', g.current.s);
+    function cl() {
       if (g.current.s === 'menu') { reset(); bgm(true); }
       else if (g.current.s === 'over') { reset(); bgm(true); }
       else if (g.current.s === 'play' && !g.current.fl) {
@@ -124,8 +107,8 @@ export default function Page() {
 
     function loop() {
       try {
-        const cv2 = cv.current; if (!cv2) { console.log('[ICY] no canvas'); ra.current = requestAnimationFrame(loop); return; }
-        const x = cv2.getContext('2d'); if (!x) { console.log('[ICY] no ctx'); ra.current = requestAnimationFrame(loop); return; }
+        const cv2 = cv.current; if (!cv2) { ra.current = requestAnimationFrame(loop); return; }
+        const x = cv2.getContext('2d'); if (!x) { ra.current = requestAnimationFrame(loop); return; }
         const W = cv2.width, H = cv2.height, t = g.current;
 
         x.fillStyle = '#0a0a1a'; x.fillRect(0, 0, W, H);
@@ -135,9 +118,8 @@ export default function Page() {
           x.fillStyle = '#7c3aed'; x.font = 'bold 38px Inter,sans-serif'; x.fillText('Icy Tower', W / 2, H / 2 - 90);
           x.fillStyle = '#9ca3af'; x.font = '15px Inter,sans-serif'; x.fillText('Take a break from quantum!', W / 2, H / 2 - 45);
           x.fillStyle = '#c084fc'; x.font = '17px Inter,sans-serif'; x.fillText('SPACE or Click to Start', W / 2, H / 2 + 10);
-          x.fillStyle = '#6b7280'; x.font = '12px Inter,sans-serif'; x.fillText('Hold SPACE/Click longer = higher jump', W / 2, H / 2 + 50);
-          x.fillStyle = '#4b5563'; x.font = '11px Inter,sans-serif'; x.fillText('F for fullscreen', W / 2, H / 2 + 80);
-          if (t.hi > 0) { x.fillStyle = '#fbbf24'; x.font = '14px Inter,sans-serif'; x.fillText('Best: ' + Math.floor(t.hi) + ' floors', W / 2, H / 2 + 115); }
+          x.fillStyle = '#6b7280'; x.font = '12px Inter,sans-serif'; x.fillText('Hold longer = higher jump', W / 2, H / 2 + 50);
+          if (t.hi > 0) { x.fillStyle = '#fbbf24'; x.font = '14px Inter,sans-serif'; x.fillText('Best: ' + Math.floor(t.hi) + ' floors', W / 2, H / 2 + 80); }
           ra.current = requestAnimationFrame(loop); return;
         }
 
@@ -151,20 +133,17 @@ export default function Page() {
           ra.current = requestAnimationFrame(loop); return;
         }
 
-        // play
+        // --- play ---
         const ks = k.current;
         if ((ks.has(' ') || ks.has('ArrowUp') || ks.has('KeyW')) && !t.fl) {
           if (!t.hd) { t.hd = true; if (t.vy >= 0) { t.vy = JV; sfx(['jump_lo','jump_mid','jump_hi'][ri(0,2)]); } }
           else if (t.vy < 0) t.vy += JH;
         } else { t.hd = false; }
 
-        // horizontal control
         let dx = t.spd;
         if (ks.has('ArrowLeft') || ks.has('KeyA')) dx = -t.spd * 0.6;
         else if (ks.has('ArrowRight') || ks.has('KeyD')) dx = t.spd * 1.3;
-
-        if (dx > 0.5) t.dir = 1;
-        else if (dx < -0.5) t.dir = -1;
+        if (dx > 0.5) t.dir = 1; else if (dx < -0.5) t.dir = -1;
 
         t.vy += G; t.px += dx;
         if (t.px > WW) t.px -= WW;
@@ -172,7 +151,8 @@ export default function Page() {
 
         let ld = false;
         for (const p of t.pl) {
-          if (t.px + PW > p.x && t.px < p.x + p.w && t.vy >= 0 && t.py + PH >= p.y && t.py + PH <= p.y + B + Math.abs(t.vy) + 2) {
+          if (t.px + PW > p.x && t.px < p.x + p.w && t.vy >= 0 &&
+              t.py + PH >= p.y && t.py + PH <= p.y + PHit + Math.abs(t.vy) + 2) {
             t.py = p.y - PH; t.vy = 0; ld = true; t.fl = false; t.rot = 0;
             if (!p.hit) {
               p.hit = true;
@@ -181,7 +161,7 @@ export default function Page() {
                 t.co++; if (t.co > t.bc) t.bc = t.co;
                 if (t.co === 2) sfx('good'); else if (t.co === 3) sfx('great'); else if (t.co >= 4) sfx(VL[ri(0, VL.length - 1)]);
               } else t.co = 1;
-              lc.current = nw; t.fs = 1; sfx('step');
+              lc.current = nw; sfx('step');
             }
             break;
           }
@@ -193,7 +173,6 @@ export default function Page() {
         const tc = t.py - H * 0.35 - t.spd * 8;
         t.cam += (tc - t.cam) * 0.06;
         t.scr = Math.max(t.scr, -t.cam / 80);
-        if (t.fs > 0) t.fs -= 0.04;
         t.ft += t.spd * 0.06; if (t.ft > 1) { t.ft = 0; t.fr++; }
 
         t.pl = t.pl.filter((p: any) => p.y - t.cam < H + 50);
@@ -202,6 +181,7 @@ export default function Page() {
           t.pl.push(mkPlat(l.y - rnd(GAP[0], GAP[1]), l));
         }
 
+        // --- draw ---
         const gr = x.createLinearGradient(0, 0, 0, H);
         gr.addColorStop(0, '#0a0a2e'); gr.addColorStop(0.5, '#0f0f23'); gr.addColorStop(1, '#1a0a2e');
         x.fillStyle = gr; x.fillRect(0, 0, W, H);
@@ -211,38 +191,45 @@ export default function Page() {
           x.fillRect((i * 97 + 30) % W, ((((i * 137 + 50) % 600) - (t.cam * 0.3) % 600) % 600 + 600) % 600, 1.5, 1.5);
         }
 
-        const sp = im.current;
+        // platforms — clean stick bars
         for (const p of t.pl) {
           const sy = p.y - t.cam;
-          if (sy < -B || sy > H + 20) continue;
-          for (let i = 0; i < p.w / B; i++) {
-            const bx = p.x + i * B;
-            let img = i === 0 ? sp['edge1'] : (i === Math.floor(p.w / B) - 1 ? sp['edge2'] : sp['chock']);
-            try {
-              if (img?.complete && img.naturalWidth > 0) x.drawImage(img, bx, sy, B, B);
-              else { x.fillStyle = '#6b21a8'; x.fillRect(bx, sy, B, B); x.strokeStyle = '#7c3aed'; x.lineWidth = 1; x.strokeRect(bx, sy, B, B); }
-            } catch { x.fillStyle = '#6b21a8'; x.fillRect(bx, sy, B, B); }
+          if (sy < -20 || sy > H + 20) continue;
+          x.fillStyle = '#6d28d9';
+          x.fillRect(p.x, sy, p.w, PHit);
+          x.fillStyle = '#8b5cf6';
+          x.fillRect(p.x, sy, p.w, 3);
+          x.fillStyle = '#4c1d95';
+          for (let j = 0; j < p.w; j += 8) x.fillRect(p.x + j, sy + PHit - 1, 4, 1);
+          // wrap-around
+          if (p.x + p.w > WW) {
+            const over = p.x + p.w - WW;
+            x.fillStyle = '#6d28d9'; x.fillRect(0, sy, over, PHit);
+            x.fillStyle = '#8b5cf6'; x.fillRect(0, sy, over, 3);
           }
-          if (p.x + p.w > WW) for (let i = 0; i < Math.ceil((p.x + p.w - WW) / B); i++) { x.fillStyle = '#6b21a8'; x.fillRect(i * B, sy, B, B); x.strokeStyle = '#7c3aed'; x.lineWidth = 1; x.strokeRect(i * B, sy, B, B); }
         }
 
-        const sy = t.py - t.cam;
-        x.save(); x.translate(t.px + PW / 2, sy + PH / 2);
-        if (t.dir < 0) x.scale(-1, 1);
-        if (t.fl) { t.rot += 0.15; x.rotate(t.rot); } else if (t.vy < -2) x.rotate(-0.12);
-        const sk = t.fl ? 'rotate' : (t.vy < -1 ? 'jump' : 'walk' + ((t.fr % 4) + 1));
-        const img = sp[sk] || sp['idle1'];
-        try { if (img?.complete && img.naturalWidth > 0) x.drawImage(img, -PW / 2, -PH / 2, PW, PH); else { x.fillStyle = '#7c3aed'; x.fillRect(-PW/2, -PH/2, PW, PH); x.fillStyle='#fff'; x.fillRect(-6,-8,4,5); x.fillRect(2,-8,4,5); } }
-        catch { x.fillStyle = '#7c3aed'; x.fillRect(-PW/2, -PH/2, PW, PH); }
-        x.restore();
-        if (t.fs > 0) { x.save(); x.fillStyle = 'rgba(255,255,255,' + (t.fs * 0.3) + ')'; x.fillRect(t.px - 3, sy - 3, PW + 6, PH + 6); x.restore(); }
+        // player
+        {
+          const sy = t.py - t.cam;
+          x.save(); x.translate(t.px + PW / 2, sy + PH / 2);
+          if (t.dir < 0) x.scale(-1, 1);
+          if (t.fl) { t.rot += 0.15; x.rotate(t.rot); } else if (t.vy < -2) x.rotate(-0.1);
+          const sk = t.fl ? 'rotate' : (t.vy < -1 ? 'jump' : 'walk' + ((t.fr % 4) + 1));
+          const img = im.current[sk] || im.current['idle1'];
+          try { if (img?.complete && img.naturalWidth > 0) x.drawImage(img, -PW/2, -PH/2, PW, PH); else { x.fillStyle='#7c3aed'; x.fillRect(-PW/2, -PH/2, PW, PH); } }
+          catch { x.fillStyle='#7c3aed'; x.fillRect(-PW/2, -PH/2, PW, PH); }
+          x.restore();
+        }
 
-        x.fillStyle = 'rgba(0,0,0,0.5)'; x.fillRect(10, 10, 170, 70);
-        x.strokeStyle = '#7c3aed'; x.lineWidth = 1; x.strokeRect(10, 10, 170, 70);
+        // HUD
+        x.fillStyle = 'rgba(0,0,0,0.5)'; x.fillRect(10, 10, 170, 60);
+        x.strokeStyle = '#7c3aed'; x.lineWidth = 1; x.strokeRect(10, 10, 170, 60);
         x.fillStyle = '#e5e7eb'; x.font = 'bold 14px Inter,sans-serif'; x.textAlign = 'left';
         x.fillText('Floor: ' + Math.floor(t.scr), 20, 30);
         if (t.co > 1) { x.fillStyle = '#fbbf24'; x.fillText('Combo: x' + t.co, 20, 50); }
-        x.fillStyle = '#9ca3af'; x.font = '11px Inter,sans-serif'; x.fillText('Speed: ' + t.spd.toFixed(1), 20, 68);
+        x.fillStyle = '#9ca3af'; x.font = '10px Inter,sans-serif'; x.textAlign = 'right';
+        x.fillText('F:FS  Arrows:move', W - 10, 22);
 
         if (t.py - t.cam > H * 0.75) {
           t.s = 'over';
@@ -252,32 +239,24 @@ export default function Page() {
         }
 
         ra.current = requestAnimationFrame(loop);
-      } catch (e) { console.error('[ICY] loop error:', e); ra.current = requestAnimationFrame(loop); }
+      } catch (e) { console.error('[ICY]', e); ra.current = requestAnimationFrame(loop); }
     }
 
-    console.log('[ICY] starting loop');
     ra.current = requestAnimationFrame(loop);
-
-    return () => {
-      cancelAnimationFrame(ra.current);
-      window.removeEventListener('resize', resize);
-      window.removeEventListener('keydown', dk);
-      window.removeEventListener('keyup', uk);
-      c.removeEventListener('click', cl);
-    };
+    return () => { cancelAnimationFrame(ra.current); window.removeEventListener('resize', resize); window.removeEventListener('keydown', dk); window.removeEventListener('keyup', uk); c.removeEventListener('click', cl); };
   }, []);
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
-      <div><h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Break Time</h2><p className="text-gray-400 text-sm">Climb the Icy Tower. Hold space/click to jump higher. Speed increases as you climb.</p></div>
+      <div><h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Break Time</h2><p className="text-gray-400 text-sm">Climb the Icy Tower. Arrows to steer, Space/Click to jump.</p></div>
       <div ref={wr} className="bg-quantum-card/40 rounded-xl border border-gray-800/50 overflow-hidden relative flex items-center justify-center [&:fullscreen]:bg-black [&:fullscreen]:rounded-none [&:fullscreen]:border-0 [&:fullscreen]:w-screen [&:fullscreen]:h-screen">
         <canvas ref={cv} className="w-full cursor-pointer" style={{ imageRendering: 'pixelated' }} />
-        <button onClick={() => { const el = wr.current; if (el) { document.fullscreenElement ? document.exitFullscreen() : el.requestFullscreen(); } }} className="absolute top-3 right-3 z-10 bg-black/50 hover:bg-black/70 text-gray-300 hover:text-white text-xs px-3 py-1.5 rounded transition-colors border border-gray-700/50">{fs ? 'Exit FS' : 'Fullscreen'}</button>
+        <button onClick={() => { const el = wr.current; if (el) { document.fullscreenElement ? document.exitFullscreen() : el.requestFullscreen(); } }} className="absolute top-3 right-3 z-10 bg-black/50 hover:bg-black/70 text-gray-300 hover:text-white text-xs px-3 py-1.5 rounded transition-colors border border-gray-700/50">{fs ? 'Exit' : 'FS'}</button>
       </div>
       <div className="grid grid-cols-3 gap-3 text-center text-xs">
-        <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40"><span className="text-gray-500 block mb-1">Controls</span><span className="text-gray-300 font-medium">SPACE / Click to Jump</span></div>
-        <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40"><span className="text-gray-500 block mb-1">Tip</span><span className="text-gray-300 font-medium">Hold longer = jump higher</span></div>
-        <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40"><span className="text-gray-500 block mb-1">Speed</span><span className="text-gray-300 font-medium">Camera pushes up as speed climbs!</span></div>
+        <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40"><span className="text-gray-500 block mb-1">Jump</span><span className="text-gray-300 font-medium">SPACE / Click</span></div>
+        <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40"><span className="text-gray-500 block mb-1">Steer</span><span className="text-gray-300 font-medium">Left / Right arrows</span></div>
+        <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40"><span className="text-gray-500 block mb-1">Speed</span><span className="text-gray-300 font-medium">Camera pushes up!</span></div>
       </div>
     </div>
   );
