@@ -2,30 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-const G = 0.45, JV = -11, JH = -0.28;
-const BS = 2, SR = 0.00035, MS = 13;
+const G = 0.45, JV = -11.5, JH = -0.28;
+const BS = 1.8, SR = 0.0004, MS = 14;
 const WW = 600, PH = 52, PW = 30, PHit = 14;
-const GAP = [60, 95];
+const GAP = [65, 95];
 const CM = 2000;
 
 function rnd(a: number, b: number) { return Math.random() * (b - a) + a; }
 function ri(a: number, b: number) { return Math.floor(rnd(a, b + 1)); }
-
-function mkPlat(y: number, prev?: { x: number; w: number }, wide = false) {
-  const w = wide ? WW : ri(5, 11) * 28;
-  const x = prev ? Math.max(0, Math.min(prev.x + rnd(-100, 100), WW - w)) : rnd(0, WW - w);
-  return { x, y, w, hit: false };
-}
-
-function newG() {
-  const pl: any[] = [];
-  for (let i = 0; i < 12; i++) pl.push(mkPlat(-i * rnd(GAP[0], GAP[1]), undefined, i < 3));
-  return {
-    s: 'menu', px: WW / 2, py: 0, vy: 0, pl, cam: 0, spd: BS,
-    scr: 0, co: 0, bc: 0, hi: 0,
-    hd: false, fl: false, rot: 0, fr: 0, ft: 0, dir: 1,
-  };
-}
 
 const SN = ['idle1','idle2','idle3','walk1','walk2','walk3','walk4','jump','rotate'];
 const VL = ['good','great','amazing','fantastic','splendid','extreme','super','sweet','wow','yo','cheer'];
@@ -35,7 +19,7 @@ function sfx(n: string) { try { const a = new Audio('/icy/' + n + '.ogg'); a.vol
 export default function Page() {
   const cv = useRef<HTMLCanvasElement>(null);
   const wr = useRef<HTMLDivElement>(null);
-  const g = useRef<any>(newG());
+  const g = useRef<any>(null);
   const k = useRef<Set<string>>(new Set());
   const im = useRef<Record<string, HTMLImageElement>>({});
   const bg = useRef<HTMLAudioElement | null>(null);
@@ -54,11 +38,21 @@ export default function Page() {
     return () => document.removeEventListener('fullscreenchange', f);
   }, []);
 
-  const resize = () => {
-    const c = cv.current; if (!c) return;
-    c.width = document.fullscreenElement ? window.innerWidth : Math.min(WW, window.innerWidth - 48);
-    c.height = document.fullscreenElement ? window.innerHeight : Math.min(600, window.innerHeight - 280);
-  };
+  const CH = 480;
+
+  function fresh() {
+    const pl: any[] = [];
+    for (let i = 0; i < 15; i++) {
+      const y = -i * rnd(GAP[0], GAP[1]);
+      pl.push({ x: 0, y, w: WW, hit: false });
+    }
+    return {
+      s: 'menu', px: WW / 2 - PW / 2, py: 0, vy: 0, pl, cam: 0, spd: BS,
+      scr: 0, co: 0, bc: 0, hi: 0, hd: false, fl: false, rot: 0, fr: 0, ft: 0, dir: 1,
+    };
+  }
+
+  if (!g.current) g.current = fresh();
 
   function bgm(on: boolean) {
     if (on) {
@@ -68,22 +62,36 @@ export default function Page() {
   }
 
   function reset() {
-    const n = newG(); n.hi = g.current.hi;
+    const n = fresh(); n.hi = g.current.hi;
     Object.assign(g.current, n);
     g.current.s = 'play'; g.current.dir = 1;
     const p = g.current.pl[0];
-    if (p) { g.current.px = p.w / 2 - PW / 2; g.current.py = p.y - PH; }
+    g.current.px = p.w / 2 - PW / 2;
+    g.current.py = p.y - PH;
   }
 
   useEffect(() => {
     const c = cv.current; if (!c) return;
+    const ch = CH;
+
+    function resize() {
+      if (!c) return;
+      c.width = WW;
+      c.height = ch;
+    }
+
     window.addEventListener('resize', resize); resize();
     g.current.s = 'menu'; g.current.hi = hi;
 
     function dk(e: KeyboardEvent) {
       if (e.repeat) return;
       k.current.add(e.code === 'Space' ? ' ' : e.code);
-      if (e.code === 'KeyF') { const el = wr.current; if (el) { document.fullscreenElement ? document.exitFullscreen() : el.requestFullscreen(); } return; }
+      if (e.code === 'KeyF') {
+        const el = wr.current;
+        if (!el) return;
+        document.fullscreenElement ? document.exitFullscreen() : el.requestFullscreen();
+        return;
+      }
       if (g.current.s === 'menu' && (e.code === 'Space' || e.code === 'Enter')) { e.preventDefault(); reset(); bgm(true); }
       else if (g.current.s === 'over') {
         if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); reset(); bgm(true); }
@@ -91,7 +99,6 @@ export default function Page() {
       }
     }
     function uk(e: KeyboardEvent) { k.current.delete(e.code === 'Space' ? ' ' : e.code); }
-
     function cl() {
       if (g.current.s === 'menu') { reset(); bgm(true); }
       else if (g.current.s === 'over') { reset(); bgm(true); }
@@ -135,20 +142,25 @@ export default function Page() {
 
         // --- play ---
         const ks = k.current;
+
+        // jump
         if ((ks.has(' ') || ks.has('ArrowUp') || ks.has('KeyW')) && !t.fl) {
           if (!t.hd) { t.hd = true; if (t.vy >= 0) { t.vy = JV; sfx(['jump_lo','jump_mid','jump_hi'][ri(0,2)]); } }
           else if (t.vy < 0) t.vy += JH;
         } else { t.hd = false; }
 
+        // horizontal
         let dx = t.spd;
         if (ks.has('ArrowLeft') || ks.has('KeyA')) dx = -t.spd * 0.6;
         else if (ks.has('ArrowRight') || ks.has('KeyD')) dx = t.spd * 1.3;
         if (dx > 0.5) t.dir = 1; else if (dx < -0.5) t.dir = -1;
 
-        t.vy += G; t.px += dx;
+        t.vy += G;
+        t.px += dx;
         if (t.px > WW) t.px -= WW;
         if (t.px < 0) t.px += WW;
 
+        // collision
         let ld = false;
         for (const p of t.pl) {
           if (t.px + PW > p.x && t.px < p.x + p.w && t.vy >= 0 &&
@@ -169,29 +181,35 @@ export default function Page() {
         if (!ld && t.vy > 0) t.fl = true;
         t.py += t.vy;
 
+        // auto-scroll — camera scrolls UP, player must climb to survive
         t.spd = Math.min(MS, t.spd + SR);
-        const tc = t.py - H * 0.35 - t.spd * 8;
-        t.cam += (tc - t.cam) * 0.06;
-        t.scr = Math.max(t.scr, -t.cam / 80);
+        t.cam -= t.spd * 1.4;
+
+        // score = floors climbed relative to start
+        t.scr = Math.max(t.scr, (-t.cam + t.pl[0].y) / 85);
+
         t.ft += t.spd * 0.06; if (t.ft > 1) { t.ft = 0; t.fr++; }
 
-        t.pl = t.pl.filter((p: any) => p.y - t.cam < H + 50);
-        while (t.pl.length < 14) {
-          const l = t.pl[t.pl.length - 1];
-          t.pl.push(mkPlat(l.y - rnd(GAP[0], GAP[1]), l));
+        // recycle platforms: everything below camera + buffer is removed,
+        // new full-width platforms generated above
+        t.pl = t.pl.filter((p: any) => p.y - t.cam > -50);
+        while (t.pl.length < 15) {
+          const l = t.pl[t.pl.length - 1] || { y: t.cam - 100 };
+          t.pl.push({ x: 0, y: l.y - rnd(GAP[0], GAP[1]), w: WW, hit: false });
         }
 
-        // --- draw ---
+        // --- render ---
         const gr = x.createLinearGradient(0, 0, 0, H);
         gr.addColorStop(0, '#0a0a2e'); gr.addColorStop(0.5, '#0f0f23'); gr.addColorStop(1, '#1a0a2e');
         x.fillStyle = gr; x.fillRect(0, 0, W, H);
 
+        // stars
         for (let i = 0; i < 25; i++) {
           x.fillStyle = 'rgba(255,255,255,' + (0.2 + ((i * 7) % 5) * 0.1) + ')';
           x.fillRect((i * 97 + 30) % W, ((((i * 137 + 50) % 600) - (t.cam * 0.3) % 600) % 600 + 600) % 600, 1.5, 1.5);
         }
 
-        // platforms — clean stick bars
+        // platforms
         for (const p of t.pl) {
           const sy = p.y - t.cam;
           if (sy < -20 || sy > H + 20) continue;
@@ -201,7 +219,7 @@ export default function Page() {
           x.fillRect(p.x, sy, p.w, 3);
           x.fillStyle = '#4c1d95';
           for (let j = 0; j < p.w; j += 8) x.fillRect(p.x + j, sy + PHit - 1, 4, 1);
-          // wrap-around
+          // wrap overflow
           if (p.x + p.w > WW) {
             const over = p.x + p.w - WW;
             x.fillStyle = '#6d28d9'; x.fillRect(0, sy, over, PHit);
@@ -228,10 +246,9 @@ export default function Page() {
         x.fillStyle = '#e5e7eb'; x.font = 'bold 14px Inter,sans-serif'; x.textAlign = 'left';
         x.fillText('Floor: ' + Math.floor(t.scr), 20, 30);
         if (t.co > 1) { x.fillStyle = '#fbbf24'; x.fillText('Combo: x' + t.co, 20, 50); }
-        x.fillStyle = '#9ca3af'; x.font = '10px Inter,sans-serif'; x.textAlign = 'right';
-        x.fillText('F:FS  Arrows:move', W - 10, 22);
 
-        if (t.py - t.cam > H * 0.75) {
+        // game over: player fell below camera view
+        if (t.py - t.cam > H + 30) {
           t.s = 'over';
           if (t.scr > t.hi) { t.hi = t.scr; setHi(t.scr); }
           sfx('gameover'); bgm(false);
@@ -249,14 +266,14 @@ export default function Page() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       <div><h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Break Time</h2><p className="text-gray-400 text-sm">Climb the Icy Tower. Arrows to steer, Space/Click to jump.</p></div>
-      <div ref={wr} className="bg-quantum-card/40 rounded-xl border border-gray-800/50 overflow-hidden relative flex items-center justify-center [&:fullscreen]:bg-black [&:fullscreen]:rounded-none [&:fullscreen]:border-0 [&:fullscreen]:w-screen [&:fullscreen]:h-screen">
-        <canvas ref={cv} className="w-full cursor-pointer" style={{ imageRendering: 'pixelated' }} />
+      <div ref={wr} className="bg-quantum-card/40 rounded-xl border border-gray-800/50 overflow-hidden relative flex items-center justify-center [&:fullscreen]:bg-black [&:fullscreen]:rounded-none [&:fullscreen]:border-0 [&:fullscreen]:flex [&:fullscreen]:items-center [&:fullscreen]:justify-center">
+        <canvas ref={cv} style={{ imageRendering: 'pixelated', width: '100%', height: 'auto', aspectRatio: WW + '/' + CH, maxWidth: WW + 'px' }} />
         <button onClick={() => { const el = wr.current; if (el) { document.fullscreenElement ? document.exitFullscreen() : el.requestFullscreen(); } }} className="absolute top-3 right-3 z-10 bg-black/50 hover:bg-black/70 text-gray-300 hover:text-white text-xs px-3 py-1.5 rounded transition-colors border border-gray-700/50">{fs ? 'Exit' : 'FS'}</button>
       </div>
       <div className="grid grid-cols-3 gap-3 text-center text-xs">
         <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40"><span className="text-gray-500 block mb-1">Jump</span><span className="text-gray-300 font-medium">SPACE / Click</span></div>
         <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40"><span className="text-gray-500 block mb-1">Steer</span><span className="text-gray-300 font-medium">Left / Right arrows</span></div>
-        <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40"><span className="text-gray-500 block mb-1">Speed</span><span className="text-gray-300 font-medium">Camera pushes up!</span></div>
+        <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40"><span className="text-gray-500 block mb-1">Speed</span><span className="text-gray-300 font-medium">Tower scrolls up — keep climbing!</span></div>
       </div>
     </div>
   );
