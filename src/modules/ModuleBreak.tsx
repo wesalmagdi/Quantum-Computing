@@ -19,7 +19,7 @@ function newG(cw: number) {
   const pl: any[] = [];
   for (let i = 0; i < 14; i++) pl.push(mkPlat(-i * rnd(GAP[0], GAP[1]), cw));
   return {
-    s: 'menu', px: cw / 2, py: 0, vy: 0, pl, cam: 0, sc: 0.5,
+    s: 'menu', px: cw / 2, py: 0, vy: 0, pl, cam: 0, sc: 1.2,
     scr: 0, co: 0, bc: 0, hi: 0, ww: cw,
     hd: false, fl: false, rot: 0, fr: 0, ft: 0, dir: 1,
   };
@@ -52,13 +52,10 @@ export default function Page() {
     return () => document.removeEventListener('fullscreenchange', f);
   }, []);
 
-  function getWW() {
-    return document.fullscreenElement ? window.innerWidth : Math.min(700, window.innerWidth - 48);
-  }
-
   function resize() {
-    const c = cv.current; if (!c) return;
-    c.width = document.fullscreenElement ? window.innerWidth : getWW();
+    const c = cv.current; const w = wr.current; if (!c || !w) return;
+    const r = w.getBoundingClientRect();
+    c.width = document.fullscreenElement ? window.innerWidth : Math.max(320, r.width);
     c.height = document.fullscreenElement ? window.innerHeight : Math.min(600, window.innerHeight - 280);
   }
 
@@ -71,7 +68,7 @@ export default function Page() {
 
   function reset() {
     if (!g.current) return;
-    const cw = getWW();
+    const cw = cv.current?.width ?? Math.min(700, window.innerWidth - 48);
     const n = newG(cw); n.hi = g.current.hi;
     Object.assign(g.current, n);
     g.current.s = 'play'; g.current.dir = 1;
@@ -83,7 +80,7 @@ export default function Page() {
     const c = cv.current; if (!c) return;
     window.addEventListener('resize', resize); resize();
 
-    g.current = newG(getWW());
+    g.current = newG(cv.current?.width ?? Math.min(700, window.innerWidth - 48));
     g.current.s = 'menu'; g.current.hi = hi;
 
     function dk(e: KeyboardEvent) {
@@ -182,10 +179,9 @@ export default function Page() {
         if (!ld && t.vy > 0) t.fl = true;
         t.py += t.vy;
 
-        // camera: auto-scrolls up + follows player jumps
+        // camera: always scrolls up. Follow player if they jump high.
         t.cam += t.sc;
-        const target = t.py - H * 0.3;
-        if (target < t.cam) t.cam += (target - t.cam) * 0.06;
+        if (t.py - t.cam < H * 0.25) t.cam += (t.py - H * 0.3 - t.cam) * 0.08;
 
         t.scr = Math.max(t.scr, t.cam / 80);
         t.ft += t.sc * 0.06; if (t.ft > 1) { t.ft = 0; t.fr++; }
@@ -254,7 +250,7 @@ export default function Page() {
     <div className="space-y-6 max-w-5xl mx-auto">
       <div><h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Break Time</h2><p className="text-gray-400 text-sm">Screen auto-scrolls — jump to keep up! Arrows to move, Space/Click to jump.</p></div>
       <div ref={wr} className="bg-quantum-card/40 rounded-xl border border-gray-800/50 overflow-hidden relative flex items-center justify-center [&:fullscreen]:bg-black [&:fullscreen]:rounded-none [&:fullscreen]:border-0 [&:fullscreen]:w-screen [&:fullscreen]:h-screen">
-        <canvas ref={cv} className="w-full cursor-pointer" style={{ imageRendering: 'pixelated' }} />
+        <canvas ref={cv} className="cursor-pointer" style={{ imageRendering: 'pixelated' }} />
         <button onClick={() => { const el = wr.current; if (el) { document.fullscreenElement ? document.exitFullscreen() : el.requestFullscreen(); } }} className="absolute top-3 right-3 z-10 bg-black/50 hover:bg-black/70 text-gray-300 hover:text-white text-xs px-3 py-1.5 rounded transition-colors border border-gray-700/50">{fs ? 'Exit' : 'FS'}</button>
       </div>
       <div className="grid grid-cols-3 gap-3 text-center text-xs">
