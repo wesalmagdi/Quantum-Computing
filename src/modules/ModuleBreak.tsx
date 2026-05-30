@@ -2,24 +2,36 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-const G = 0.45, JV = -12, JH = -0.3;
-const MS = 5, SR = 0.0005, MAX = 15;
-const PH = 52, PW = 30, PHit = 14;
-const GAP = [60, 85];
+const SC = 1.6;
+const PW = Math.round(30 * SC), PH = Math.round(52 * SC), PHit = Math.round(14 * SC);
+const MS = 8, SR = 0.0005, MAX = 15;
+const G = 0.7, JV = -18, JH = -0.5;
+const GAP = [70, 100];
 const CM = 2000;
 
 function rnd(a: number, b: number) { return Math.random() * (b - a) + a; }
 function ri(a: number, b: number) { return Math.floor(rnd(a, b + 1)); }
 
-function mkPlat(y: number, ww: number, i: number) {
+function mkPlat(y: number, ww: number, i: number, prev?: { x: number; w: number }) {
   if (i < 3) return { x: 0, y, w: ww, hit: false };
-  const w = rnd(120, 300);
-  return { x: rnd(0, ww - w), y, w, hit: false };
+  const w = 220;
+  let x: number;
+  if (prev) {
+    const minX = Math.max(0, prev.x + prev.w - w - 50);
+    const maxX = Math.min(ww - w, prev.x + 50);
+    x = rnd(minX, maxX);
+  } else {
+    x = rnd(0, ww - w);
+  }
+  return { x, y, w, hit: false };
 }
 
 function newG(cw: number) {
   const pl: any[] = [];
-  for (let i = 0; i < 14; i++) pl.push(mkPlat(-i * rnd(GAP[0], GAP[1]), cw, i));
+  for (let i = 0; i < 14; i++) {
+    const y = -i * rnd(GAP[0], GAP[1]);
+    pl.push(mkPlat(y, cw, i, pl[i - 1]));
+  }
   return {
     s: 'menu', px: cw / 2, py: 0, vy: 0, pl, cam: 0, sc: 0.8,
     scr: 0, co: 0, bc: 0, hi: 0, ww: cw, fc: 0,
@@ -204,7 +216,7 @@ export default function Page() {
         t.pl = t.pl.filter((p: any) => p.y - t.cam < H + 50);
         while (t.pl.length < 14) {
           const l = t.pl[t.pl.length - 1];
-          t.pl.push(mkPlat(l.y - rnd(GAP[0], GAP[1]), t.ww, t.fc));
+          t.pl.push(mkPlat(l.y - rnd(GAP[0], GAP[1]), t.ww, t.fc, l));
           t.fc++;
         }
 
