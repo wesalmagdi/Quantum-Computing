@@ -6,36 +6,30 @@ const SC = 1.6;
 const PW = Math.round(30 * SC), PH = Math.round(52 * SC), PHit = Math.round(14 * SC);
 const MS = 8, SR = 0.0005, MAX = 15;
 const G = 0.7, JV = -18, JH = -0.5;
-const GAP = [70, 100];
+const GAP = 80;
 const CM = 2000;
 
 function rnd(a: number, b: number) { return Math.random() * (b - a) + a; }
 function ri(a: number, b: number) { return Math.floor(rnd(a, b + 1)); }
 
-function mkPlat(y: number, ww: number, i: number, prev?: { x: number; w: number }) {
+function mkPlat(y: number, ww: number, i: number) {
   if (i < 3) return { x: 0, y, w: ww, hit: false };
   const w = 220;
-  let x: number;
-  if (prev) {
-    const minX = Math.max(0, prev.x + prev.w - w - 50);
-    const maxX = Math.min(ww - w, prev.x + 50);
-    x = rnd(minX, maxX);
-  } else {
-    x = rnd(0, ww - w);
-  }
+  const pat = [0, ww / 2 - w / 2, ww - w];
+  const x = pat[i % 3];
   return { x, y, w, hit: false };
 }
 
 function newG(cw: number) {
   const pl: any[] = [];
   for (let i = 0; i < 14; i++) {
-    const y = -i * rnd(GAP[0], GAP[1]);
-    pl.push(mkPlat(y, cw, i, pl[i - 1]));
+    const y = -i * rnd(GAP - 10, GAP + 10);
+    pl.push(mkPlat(y, cw, i));
   }
   return {
     s: 'menu', px: cw / 2, py: 0, vy: 0, pl, cam: 0, sc: 0.8,
     scr: 0, co: 0, bc: 0, hi: 0, ww: cw, fc: 0,
-    hd: false, fl: false, rot: 0, fr: 0, ft: 0, dir: 1,
+    hd: false, fl: false, rot: 0, fr: 0, ft: 0, dir: 1, ct: 0,
   };
 }
 
@@ -178,7 +172,7 @@ export default function Page() {
         if (ks.has('ArrowLeft') || ks.has('KeyA')) { dx = -MS; t.dir = -1; }
         else if (ks.has('ArrowRight') || ks.has('KeyD')) { dx = MS; t.dir = 1; }
 
-        if ((ks.has(' ') || ks.has('ArrowUp') || ks.has('KeyW')) && !t.fl) {
+        if ((ks.has(' ') || ks.has('ArrowUp') || ks.has('KeyW')) && t.ct > 0) {
           if (!t.hd) { t.hd = true; if (t.vy >= 0) { t.vy = JV; sfx(['jump_lo','jump_mid','jump_hi'][ri(0,2)]); } }
           else if (t.vy < 0) t.vy += JH;
         } else { t.hd = false; }
@@ -192,7 +186,7 @@ export default function Page() {
         for (const p of t.pl) {
           if (t.vy >= 0 && t.px + PW > p.x && t.px < p.x + p.w &&
               nextFeet >= p.y && t.py + PH < p.y + PHit + Math.abs(t.vy) + 6) {
-            t.py = p.y - PH; t.vy = 0; ld = true; t.fl = false; t.rot = 0;
+            t.py = p.y - PH; t.vy = 0; ld = true; t.rot = 0;
             if (!p.hit) {
               p.hit = true;
               const nw = Date.now();
@@ -205,7 +199,7 @@ export default function Page() {
             break;
           }
         }
-        if (!ld && t.vy > 0) t.fl = true;
+        if (ld) { t.ct = 8; t.fl = false; } else { t.ct = Math.max(0, t.ct - 1); if (t.vy > 0) t.fl = true; }
 
         t.cam -= t.sc;
         if (t.py - t.cam < H * 0.08) t.cam += (t.py - H * 0.3 - t.cam) * 0.08;
@@ -216,7 +210,7 @@ export default function Page() {
         t.pl = t.pl.filter((p: any) => p.y - t.cam < H + 50);
         while (t.pl.length < 14) {
           const l = t.pl[t.pl.length - 1];
-          t.pl.push(mkPlat(l.y - rnd(GAP[0], GAP[1]), t.ww, t.fc, l));
+          t.pl.push(mkPlat(l.y - rnd(GAP - 10, GAP + 10), t.ww, t.fc));
           t.fc++;
         }
 
