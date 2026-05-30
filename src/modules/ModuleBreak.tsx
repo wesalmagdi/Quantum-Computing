@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 const SC = 1.6;
 const PW = Math.round(30 * SC), PH = Math.round(52 * SC), PHit = Math.round(14 * SC);
 const MS = 8, MAX = 15;
-const G = 0.7, JV = -14, JH = -0.1;
+const G = 0.9, JV = -15;
 const GAP = 80;
 const CM = 2000;
 
@@ -15,8 +15,9 @@ function mkPlat(y: number, ww: number, prev?: { x: number; w: number }) {
   const w = 220;
   let x: number;
   if (prev) {
-    const minX = Math.max(0, prev.x + prev.w - w - 60);
-    const maxX = Math.min(ww - w, prev.x + 60);
+    const m = 200;
+    const minX = Math.max(0, prev.x + prev.w - w - m);
+    const maxX = Math.min(ww - w, prev.x + m);
     x = Math.random() * (maxX - minX) + minX;
   } else {
     x = Math.random() * (ww - w);
@@ -140,7 +141,7 @@ export default function Page() {
           x.fillStyle = '#7c3aed'; x.font = 'bold 38px Inter,sans-serif'; x.fillText('Icy Tower', W / 2, H / 2 - 90);
           x.fillStyle = '#9ca3af'; x.font = '15px Inter,sans-serif'; x.fillText('Take a break from quantum!', W / 2, H / 2 - 45);
           x.fillStyle = '#c084fc'; x.font = '17px Inter,sans-serif'; x.fillText('SPACE or Click to Start', W / 2, H / 2 + 10);
-          x.fillStyle = '#6b7280'; x.font = '12px Inter,sans-serif'; x.fillText('Hold longer = higher jump', W / 2, H / 2 + 50);
+          x.fillStyle = '#6b7280'; x.font = '12px Inter,sans-serif'; x.fillText('Jump each floor to keep up!', W / 2, H / 2 + 50);
           if (t.hi > 0) { x.fillStyle = '#fbbf24'; x.font = '14px Inter,sans-serif'; x.fillText('Best: ' + Math.floor(t.hi) + ' floors', W / 2, H / 2 + 80); }
           ra.current = requestAnimationFrame(loop); return;
         }
@@ -167,10 +168,13 @@ export default function Page() {
         if (t.px > t.ww - PW) t.px = t.ww - PW;
 
         const wantJump = ks.has(' ') || ks.has('ArrowUp') || ks.has('KeyW');
-        if (wantJump && t.vy < 3) {
-          if (!t.hd) { t.hd = true; t.vy = JV; sfx(['jump_lo','jump_mid','jump_hi'][ri(0, 2)]); }
-          else if (t.vy < 0) t.vy += JH;
-        } else { t.hd = false; }
+        if (wantJump && t.vy < 3 && !t.hd) {
+          t.hd = true;
+          t.vy = JV;
+          sfx(['jump_lo','jump_mid','jump_hi'][ri(0, 2)]);
+        } else if (!wantJump) {
+          t.hd = false;
+        }
 
         let ld = false;
         const nextFeet = t.py + PH + Math.max(0, t.vy);
