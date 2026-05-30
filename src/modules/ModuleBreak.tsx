@@ -5,15 +5,15 @@ import { useEffect, useRef, useState } from 'react';
 const G = 0.45, JV = -12, JH = -0.3;
 const MS = 5, SR = 0.0005, MAX = 15;
 const PH = 52, PW = 30, PHit = 14;
-const GAP = [65, 100];
+const GAP = [60, 85];
 const CM = 2000;
 
 function rnd(a: number, b: number) { return Math.random() * (b - a) + a; }
 function ri(a: number, b: number) { return Math.floor(rnd(a, b + 1)); }
 
 function mkPlat(y: number, ww: number, i: number) {
-  if (i < 2) return { x: 0, y, w: ww, hit: false };
-  const w = rnd(70, 180);
+  if (i < 3) return { x: 0, y, w: ww, hit: false };
+  const w = rnd(120, 300);
   return { x: rnd(0, ww - w), y, w, hit: false };
 }
 
@@ -21,7 +21,7 @@ function newG(cw: number) {
   const pl: any[] = [];
   for (let i = 0; i < 14; i++) pl.push(mkPlat(-i * rnd(GAP[0], GAP[1]), cw, i));
   return {
-    s: 'menu', px: cw / 2, py: 0, vy: 0, pl, cam: 0, sc: 1.2,
+    s: 'menu', px: cw / 2, py: 0, vy: 0, pl, cam: 0, sc: 0.8,
     scr: 0, co: 0, bc: 0, hi: 0, ww: cw, fc: 0,
     hd: false, fl: false, rot: 0, fr: 0, ft: 0, dir: 1,
   };
@@ -30,7 +30,13 @@ function newG(cw: number) {
 const SN = ['idle1','idle2','idle3','walk1','walk2','walk3','walk4','jump','rotate'];
 const VL = ['good','great','amazing','fantastic','splendid','extreme','super','sweet','wow','yo','cheer'];
 
-function sfx(n: string) { try { const a = new Audio('/icy/' + n + '.ogg'); a.volume = 0.5; a.play(); } catch {} }
+function sfx(n: string) {
+  try {
+    const a = new Audio('/icy/' + n + '.ogg');
+    a.volume = 0.5;
+    a.play().catch(() => {});
+  } catch {}
+}
 
 export default function Page() {
   const cv = useRef<HTMLCanvasElement>(null);
@@ -62,10 +68,17 @@ export default function Page() {
   }
 
   function bgm(on: boolean) {
-    if (on) {
-      if (!bg.current) { bg.current = new Audio('/icy/bg_beat.ogg'); bg.current.loop = true; bg.current.volume = 0.3; }
-      bg.current.currentTime = 0; bg.current.play();
-    } else { bg.current?.pause(); }
+    try {
+      if (on) {
+        bg.current?.pause();
+        const a = new Audio('/icy/bg_beat.ogg');
+        a.loop = true; a.volume = 0.3;
+        a.play().catch(() => {});
+        bg.current = a;
+      } else {
+        bg.current?.pause();
+      }
+    } catch {}
   }
 
   function reset() {
@@ -91,17 +104,17 @@ export default function Page() {
       if (e.repeat) return;
       k.current.add(e.code === 'Space' ? ' ' : e.code);
       if (e.code === 'KeyF') { const el = wr.current; if (el) { document.fullscreenElement ? document.exitFullscreen() : el.requestFullscreen(); } return; }
-      if (g.current.s === 'menu' && (e.code === 'Space' || e.code === 'Enter')) { e.preventDefault(); reset(); bgm(true); }
+      if (g.current.s === 'menu' && (e.code === 'Space' || e.code === 'Enter')) { e.preventDefault(); bgm(true); reset(); }
       else if (g.current.s === 'over') {
-        if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); reset(); bgm(true); }
+        if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); bgm(true); reset(); }
         if (e.code === 'Escape') g.current.s = 'menu';
       }
     }
     function uk(e: KeyboardEvent) { k.current.delete(e.code === 'Space' ? ' ' : e.code); }
 
     function cl() {
-      if (g.current.s === 'menu') { reset(); bgm(true); }
-      else if (g.current.s === 'over') { reset(); bgm(true); }
+      if (g.current.s === 'menu') { bgm(true); reset(); }
+      else if (g.current.s === 'over') { bgm(true); reset(); }
       else if (g.current.s === 'play' && !g.current.fl) {
         g.current.hd = true;
         if (g.current.vy >= 0) { g.current.vy = JV; sfx(['jump_lo','jump_mid','jump_hi'][ri(0,2)]); }
@@ -163,9 +176,10 @@ export default function Page() {
         if (t.px > t.ww - PW) t.px = t.ww - PW;
 
         let ld = false;
+        const nextFeet = t.py + PH + Math.max(0, t.vy);
         for (const p of t.pl) {
           if (t.vy >= 0 && t.px + PW > p.x && t.px < p.x + p.w &&
-              t.py + PH >= p.y && t.py + PH <= p.y + PHit + Math.abs(t.vy) + 2) {
+              nextFeet >= p.y && t.py + PH < p.y + PHit + Math.abs(t.vy) + 6) {
             t.py = p.y - PH; t.vy = 0; ld = true; t.fl = false; t.rot = 0;
             if (!p.hit) {
               p.hit = true;
@@ -180,12 +194,9 @@ export default function Page() {
           }
         }
         if (!ld && t.vy > 0) t.fl = true;
-        t.py += t.vy;
 
-        // camera auto-scrolls UP (cam more negative). Only follows player
-        // if they are about to leave the top of the screen.
         t.cam -= t.sc;
-        if (t.py - t.cam < H * 0.1) t.cam += (t.py - H * 0.35 - t.cam) * 0.08;
+        if (t.py - t.cam < H * 0.08) t.cam += (t.py - H * 0.3 - t.cam) * 0.08;
 
         t.scr = t.fc;
         t.ft += 0.12; if (t.ft > 1) { t.ft = 0; t.fr++; }
@@ -206,7 +217,8 @@ export default function Page() {
           x.fillRect((i * 97 + 30) % W, ((((i * 137 + 50) % H) - (t.cam * 0.5) % H) % H + H) % H, 1.5, 1.5);
         }
 
-        for (const p of t.pl) {
+        const sorted = [...t.pl].sort((a, b) => b.y - a.y);
+        for (const p of sorted) {
           const sy = p.y - t.cam;
           if (sy < -20 || sy > H + 20) continue;
           x.fillStyle = '#6d28d9'; x.fillRect(p.x, sy, p.w, PHit);
