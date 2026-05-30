@@ -5,23 +5,28 @@ import { useEffect, useRef, useState } from 'react';
 const SC = 1.6;
 const PW = Math.round(30 * SC), PH = Math.round(52 * SC), PHit = Math.round(14 * SC);
 const MS = 8, MAX = 15;
-const G = 0.7, JV = -18, JH = -0.5;
+const G = 0.7, JV = -14, JH = -0.1;
 const GAP = 80;
 const CM = 2000;
 
 function ri(a: number, b: number) { return Math.floor(Math.random() * (b - a + 1) + a); }
 
-function mkPlat(y: number, ww: number, i: number) {
+function mkPlat(y: number, ww: number, prev?: { x: number; w: number }) {
   const w = 220;
-  const m = 40;
-  const pos = [m, ww * 0.3 - w / 2, ww / 2 - w / 2, ww * 0.7 - w / 2, ww - w - m];
-  const x = pos[i % 5];
+  let x: number;
+  if (prev) {
+    const minX = Math.max(0, prev.x + prev.w - w - 60);
+    const maxX = Math.min(ww - w, prev.x + 60);
+    x = Math.random() * (maxX - minX) + minX;
+  } else {
+    x = Math.random() * (ww - w);
+  }
   return { x, y, w, hit: false };
 }
 
 function newG(cw: number) {
   const pl: any[] = [];
-  for (let i = 0; i < 14; i++) pl.push(mkPlat(-i * GAP, cw, i));
+  for (let i = 0; i < 14; i++) pl.push(mkPlat(-i * GAP, cw, pl[i - 1]));
   return {
     s: 'menu', px: cw / 2, py: 0, vy: 0, pl, cam: 0, sc: 0.8,
     scr: 0, co: 0, bc: 0, hi: 0, ww: cw, fc: 0,
@@ -149,7 +154,7 @@ export default function Page() {
           ra.current = requestAnimationFrame(loop); return;
         }
 
-        t.sc = Math.min(MAX, 0.8 + Math.floor((t.fc + 14) / 100) * 0.5);
+        t.sc = Math.min(MAX, 0.8 + Math.floor((t.fc + 14) / 50) * 0.8);
 
         const ks = k.current;
         let dx = 0;
@@ -161,7 +166,6 @@ export default function Page() {
         if (t.px < 0) t.px = 0;
         if (t.px > t.ww - PW) t.px = t.ww - PW;
 
-        // jump check: can jump if vy is near zero (on ground or just left it)
         const wantJump = ks.has(' ') || ks.has('ArrowUp') || ks.has('KeyW');
         if (wantJump && t.vy < 3) {
           if (!t.hd) { t.hd = true; t.vy = JV; sfx(['jump_lo','jump_mid','jump_hi'][ri(0, 2)]); }
@@ -198,7 +202,7 @@ export default function Page() {
         t.pl = t.pl.filter((p: any) => p.y - t.cam < H + 50);
         while (t.pl.length < 14) {
           const l = t.pl[t.pl.length - 1];
-          t.pl.push(mkPlat(l.y - GAP, t.ww, t.fc));
+          t.pl.push(mkPlat(l.y - GAP, t.ww, l));
           t.fc++;
         }
 
