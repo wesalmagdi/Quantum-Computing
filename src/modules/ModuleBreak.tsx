@@ -11,16 +11,18 @@ const CM = 2000;
 function rnd(a: number, b: number) { return Math.random() * (b - a) + a; }
 function ri(a: number, b: number) { return Math.floor(rnd(a, b + 1)); }
 
-function mkPlat(y: number, w: number) {
-  return { x: 0, y, w, hit: false };
+function mkPlat(y: number, ww: number, i: number) {
+  if (i < 2) return { x: 0, y, w: ww, hit: false };
+  const w = rnd(70, 180);
+  return { x: rnd(0, ww - w), y, w, hit: false };
 }
 
 function newG(cw: number) {
   const pl: any[] = [];
-  for (let i = 0; i < 14; i++) pl.push(mkPlat(-i * rnd(GAP[0], GAP[1]), cw));
+  for (let i = 0; i < 14; i++) pl.push(mkPlat(-i * rnd(GAP[0], GAP[1]), cw, i));
   return {
     s: 'menu', px: cw / 2, py: 0, vy: 0, pl, cam: 0, sc: 1.2,
-    scr: 0, co: 0, bc: 0, hi: 0, ww: cw,
+    scr: 0, co: 0, bc: 0, hi: 0, ww: cw, fc: 0,
     hd: false, fl: false, rot: 0, fr: 0, ft: 0, dir: 1,
   };
 }
@@ -73,7 +75,9 @@ export default function Page() {
     Object.assign(g.current, n);
     g.current.s = 'play'; g.current.dir = 1;
     const p = g.current.pl[0];
-    if (p) { g.current.px = g.current.ww / 2 - PW / 2; g.current.py = p.y - PH; }
+    if (p) { g.current.px = p.x + p.w / 2 - PW / 2; g.current.py = p.y - PH; }
+    const h = cv.current?.height ?? 600;
+    g.current.cam = g.current.py - h * 0.3;
   }
 
   useEffect(() => {
@@ -142,10 +146,8 @@ export default function Page() {
           ra.current = requestAnimationFrame(loop); return;
         }
 
-        // --- speed ramps up ---
         t.sc = Math.min(MAX, t.sc + SR);
 
-        // input: arrow keys to move at a fixed fast speed
         const ks = k.current;
         let dx = 0;
         if (ks.has('ArrowLeft') || ks.has('KeyA')) { dx = -MS; t.dir = -1; }
@@ -162,7 +164,8 @@ export default function Page() {
 
         let ld = false;
         for (const p of t.pl) {
-          if (t.vy >= 0 && t.py + PH >= p.y && t.py + PH <= p.y + PHit + Math.abs(t.vy) + 2) {
+          if (t.vy >= 0 && t.px + PW > p.x && t.px < p.x + p.w &&
+              t.py + PH >= p.y && t.py + PH <= p.y + PHit + Math.abs(t.vy) + 2) {
             t.py = p.y - PH; t.vy = 0; ld = true; t.fl = false; t.rot = 0;
             if (!p.hit) {
               p.hit = true;
@@ -179,17 +182,19 @@ export default function Page() {
         if (!ld && t.vy > 0) t.fl = true;
         t.py += t.vy;
 
-        // camera: always scrolls up. Follow player if they jump high.
-        t.cam += t.sc;
-        if (t.py - t.cam < H * 0.25) t.cam += (t.py - H * 0.3 - t.cam) * 0.08;
+        // camera auto-scrolls UP (cam more negative). Only follows player
+        // if they are about to leave the top of the screen.
+        t.cam -= t.sc;
+        if (t.py - t.cam < H * 0.1) t.cam += (t.py - H * 0.35 - t.cam) * 0.08;
 
-        t.scr = Math.max(t.scr, t.cam / 80);
-        t.ft += t.sc * 0.06; if (t.ft > 1) { t.ft = 0; t.fr++; }
+        t.scr = t.fc;
+        t.ft += 0.12; if (t.ft > 1) { t.ft = 0; t.fr++; }
 
         t.pl = t.pl.filter((p: any) => p.y - t.cam < H + 50);
         while (t.pl.length < 14) {
           const l = t.pl[t.pl.length - 1];
-          t.pl.push(mkPlat(l.y - rnd(GAP[0], GAP[1]), t.ww));
+          t.pl.push(mkPlat(l.y - rnd(GAP[0], GAP[1]), t.ww, t.fc));
+          t.fc++;
         }
 
         const gr = x.createLinearGradient(0, 0, 0, H);
@@ -198,16 +203,16 @@ export default function Page() {
 
         for (let i = 0; i < 25; i++) {
           x.fillStyle = 'rgba(255,255,255,' + (0.2 + ((i * 7) % 5) * 0.1) + ')';
-          x.fillRect((i * 97 + 30) % W, ((((i * 137 + 50) % 600) - (t.cam * 0.5) % 600) % 600 + 600) % 600, 1.5, 1.5);
+          x.fillRect((i * 97 + 30) % W, ((((i * 137 + 50) % H) - (t.cam * 0.5) % H) % H + H) % H, 1.5, 1.5);
         }
 
         for (const p of t.pl) {
           const sy = p.y - t.cam;
           if (sy < -20 || sy > H + 20) continue;
-          x.fillStyle = '#6d28d9'; x.fillRect(0, sy, t.ww, PHit);
-          x.fillStyle = '#8b5cf6'; x.fillRect(0, sy, t.ww, 3);
+          x.fillStyle = '#6d28d9'; x.fillRect(p.x, sy, p.w, PHit);
+          x.fillStyle = '#8b5cf6'; x.fillRect(p.x, sy, p.w, 3);
           x.fillStyle = '#4c1d95';
-          for (let j = 0; j < t.ww; j += 10) x.fillRect(j, sy + PHit - 1, 5, 1);
+          for (let j = p.x; j < p.x + p.w; j += 10) x.fillRect(j, sy + PHit - 1, 5, 1);
         }
 
         {
