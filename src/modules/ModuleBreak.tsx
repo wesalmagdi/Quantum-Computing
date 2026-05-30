@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 
 const SC = 1.6;
 const PW = Math.round(30 * SC), PH = Math.round(52 * SC), PHit = Math.round(14 * SC);
-const MS = 8, SR = 0.0005, MAX = 15;
+const MS = 8, MAX = 15;
 const G = 0.7, JV = -18, JH = -0.5;
 const GAP = 80;
 const CM = 2000;
@@ -12,9 +12,10 @@ const CM = 2000;
 function ri(a: number, b: number) { return Math.floor(Math.random() * (b - a + 1) + a); }
 
 function mkPlat(y: number, ww: number, i: number) {
-  if (i < 3) return { x: 0, y, w: ww, hit: false };
   const w = 220;
-  const x = i % 2 === 0 ? 0 : ww - w;
+  const m = 40;
+  const pos = [m, ww * 0.3 - w / 2, ww / 2 - w / 2, ww * 0.7 - w / 2, ww - w - m];
+  const x = pos[i % 5];
   return { x, y, w, hit: false };
 }
 
@@ -148,7 +149,7 @@ export default function Page() {
           ra.current = requestAnimationFrame(loop); return;
         }
 
-        t.sc = Math.min(MAX, t.sc + SR);
+        t.sc = Math.min(MAX, 0.8 + Math.floor((t.fc + 14) / 100) * 0.5);
 
         const ks = k.current;
         let dx = 0;
