@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-const G = 0.5, JV = -11, JH = -0.25, MH = 350;
+const G = 0.5, JV = -12, JH = -0.3, MH = 350;
 const BS = 2, SR = 0.0003, MS = 12;
-const WW = 600, B = 28, PW = 24, PH = 44;
-const GAP = [70, 100];
+const WW = 600, B = 30, PW = 30, PH = 52;
+const GAP = [65, 90];
 const CM = 2000;
 
 function rnd(a: number, b: number) { return Math.random() * (b - a) + a; }
@@ -20,7 +20,7 @@ function mkPlat(y: number, prev?: { x: number; w: number }) {
 function newG() {
   const pl: any[] = [];
   for (let i = 0; i < 10; i++) pl.push(mkPlat(-i * rnd(GAP[0], GAP[1])));
-  return { s: 'menu', px: WW / 2, py: 0, vy: 0, pl, cam: 0, spd: BS, scr: 0, co: 0, bc: 0, hi: 0, hd: false, fl: false, rot: 0, fs: 0, fr: 0, ft: 0 };
+  return { s: 'menu', px: WW / 2, py: 0, vy: 0, pl, cam: 0, spd: BS, scr: 0, co: 0, bc: 0, hi: 0, hd: false, fl: false, rot: 0, fs: 0, fr: 0, ft: 0, dir: 1 };
 }
 
 const SN = ['idle1','idle2','idle3','walk1','walk2','walk3','walk4','jump','rotate','chock','edge1','edge2'];
@@ -71,7 +71,7 @@ export default function Page() {
     g.current.scr = n.scr; g.current.co = n.co; g.current.bc = n.bc;
     g.current.hd = n.hd; g.current.fl = n.fl; g.current.rot = n.rot;
     g.current.fs = n.fs; g.current.fr = n.fr; g.current.ft = n.ft;
-    g.current.s = 'play';
+    g.current.s = 'play'; g.current.dir = 1;
     const p = g.current.pl[0];
     if (p) { g.current.px = p.x + p.w / 2 - PW / 2; g.current.py = p.y - PH; }
     console.log('[ICY] reset done, state:', g.current.s, 'platforms:', g.current.pl.length, 'py:', g.current.py);
@@ -158,7 +158,15 @@ export default function Page() {
           else if (t.vy < 0) t.vy += JH;
         } else { t.hd = false; }
 
-        t.vy += G; t.px += t.spd;
+        // horizontal control
+        let dx = t.spd;
+        if (ks.has('ArrowLeft') || ks.has('KeyA')) dx = -t.spd * 0.6;
+        else if (ks.has('ArrowRight') || ks.has('KeyD')) dx = t.spd * 1.3;
+
+        if (dx > 0.5) t.dir = 1;
+        else if (dx < -0.5) t.dir = -1;
+
+        t.vy += G; t.px += dx;
         if (t.px > WW) t.px -= WW;
         if (t.px < 0) t.px += WW;
 
@@ -220,6 +228,7 @@ export default function Page() {
 
         const sy = t.py - t.cam;
         x.save(); x.translate(t.px + PW / 2, sy + PH / 2);
+        if (t.dir < 0) x.scale(-1, 1);
         if (t.fl) { t.rot += 0.15; x.rotate(t.rot); } else if (t.vy < -2) x.rotate(-0.12);
         const sk = t.fl ? 'rotate' : (t.vy < -1 ? 'jump' : 'walk' + ((t.fr % 4) + 1));
         const img = sp[sk] || sp['idle1'];
@@ -262,7 +271,7 @@ export default function Page() {
     <div className="space-y-6 max-w-5xl mx-auto">
       <div><h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Break Time</h2><p className="text-gray-400 text-sm">Climb the Icy Tower. Hold space/click to jump higher. Speed increases as you climb.</p></div>
       <div ref={wr} className="bg-quantum-card/40 rounded-xl border border-gray-800/50 overflow-hidden relative flex items-center justify-center [&:fullscreen]:bg-black [&:fullscreen]:rounded-none [&:fullscreen]:border-0 [&:fullscreen]:w-screen [&:fullscreen]:h-screen">
-        <canvas ref={cv} className="w-full cursor-pointer" style={{ imageRendering: 'pixelated', maxWidth: WW + 'px' }} />
+        <canvas ref={cv} className="w-full cursor-pointer" style={{ imageRendering: 'pixelated' }} />
         <button onClick={() => { const el = wr.current; if (el) { document.fullscreenElement ? document.exitFullscreen() : el.requestFullscreen(); } }} className="absolute top-3 right-3 z-10 bg-black/50 hover:bg-black/70 text-gray-300 hover:text-white text-xs px-3 py-1.5 rounded transition-colors border border-gray-700/50">{fs ? 'Exit FS' : 'Fullscreen'}</button>
       </div>
       <div className="grid grid-cols-3 gap-3 text-center text-xs">
