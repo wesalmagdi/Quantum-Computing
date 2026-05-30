@@ -31,7 +31,7 @@ function newG(cw: number) {
   return {
     s: 'menu', px: cw / 2, py: 0, vy: 0, pl, cam: 0, sc: 0.8,
     scr: 0, co: 0, bc: 0, hi: 0, ww: cw, fc: 0,
-    hd: false, rot: 0, fr: 0, ft: 0, dir: 1,
+    hd: false, fl: false, rot: 0, fr: 0, ft: 0, dir: 1,
   };
 }
 
@@ -168,7 +168,7 @@ export default function Page() {
         if (t.px > t.ww - PW) t.px = t.ww - PW;
 
         const wantJump = ks.has(' ') || ks.has('ArrowUp') || ks.has('KeyW');
-        if (wantJump && t.vy < 3) {
+        if (wantJump && !t.fl) {
           if (!t.hd) { t.hd = true; t.vy = JV; sfx(['jump_lo','jump_mid','jump_hi'][ri(0, 2)]); }
           else if (t.vy < 0) t.vy += JH;
         } else { t.hd = false; }
@@ -191,6 +191,9 @@ export default function Page() {
             break;
           }
         }
+
+        if (ld) t.fl = false;
+        else if (t.vy > 0) t.fl = true;
 
         t.py += t.vy;
 
