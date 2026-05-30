@@ -45,7 +45,7 @@ export default function Page() {
   const [fs, setFs] = useState(false);
 
   useEffect(() => {
-    for (const n of SN) { const i = new Image(); i.src = '/icy/' + n + '.png'; im.current[n] = i; }
+    for (const n of SN) { const i = new Image(); i.src = '/icy/' + n + '.bmp'; im.current[n] = i; }
   }, []);
 
   useEffect(() => {
