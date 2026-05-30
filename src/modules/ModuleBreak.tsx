@@ -153,7 +153,6 @@ export default function Page() {
         let dx = 0;
         if (ks.has('ArrowLeft') || ks.has('KeyA')) { dx = -t.spd * 0.7; t.dir = -1; }
         else if (ks.has('ArrowRight') || ks.has('KeyD')) { dx = t.spd * 0.7; t.dir = 1; }
-        else t.dir = 1;
 
         if ((ks.has(' ') || ks.has('ArrowUp') || ks.has('KeyW')) && !t.fl) {
           if (!t.hd) { t.hd = true; if (t.vy >= 0) { t.vy = JV; sfx(['jump_lo','jump_mid','jump_hi'][ri(0,2)]); } }
@@ -219,7 +218,8 @@ export default function Page() {
           x.save(); x.translate(t.px + PW / 2, sy + PH / 2);
           if (t.dir < 0) x.scale(-1, 1);
           if (t.fl) { t.rot += 0.15; x.rotate(t.rot); } else if (t.vy < -2) x.rotate(-0.1);
-          const sk = t.fl ? 'rotate' : (t.vy < -1 ? 'jump' : 'walk' + ((t.fr % 4) + 1));
+          const standing = Math.abs(dx) < 0.1 && !t.fl && t.vy >= -1;
+          const sk = t.fl ? 'rotate' : (t.vy < -1 ? 'jump' : (standing ? 'idle' + ((t.fr % 3) + 1) : 'walk' + ((t.fr % 4) + 1)));
           const img = im.current[sk] || im.current['idle1'];
           try { if (img?.complete && img.naturalWidth > 0) x.drawImage(img, -PW/2, -PH/2, PW, PH); else { x.fillStyle='#7c3aed'; x.fillRect(-PW/2, -PH/2, PW, PH); } }
           catch { x.fillStyle='#7c3aed'; x.fillRect(-PW/2, -PH/2, PW, PH); }
