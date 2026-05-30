@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 const G = 0.45, JV = -11, JH = -0.28;
-const BS = 1.5, SR = 0.0004, MS = 14;
+const BS = 0.3, SR = 0.00025, MS = 10;
 const PH = 52, PW = 30, PHit = 14;
 const GAP = [70, 110];
 const CM = 2000;
@@ -17,7 +17,7 @@ function mkPlat(y: number, w: number) {
 
 function newG(cw: number) {
   const pl: any[] = [];
-  for (let i = 0; i < 12; i++) pl.push(mkPlat(-i * rnd(GAP[0], GAP[1]), cw));
+  for (let i = 0; i < 14; i++) pl.push(mkPlat(-i * rnd(GAP[0], GAP[1]), cw));
   return {
     s: 'menu', px: cw / 2, py: 0, vy: 0, pl, cam: 0, spd: BS,
     scr: 0, co: 0, bc: 0, hi: 0, ww: cw,
@@ -58,8 +58,7 @@ export default function Page() {
 
   function resize() {
     const c = cv.current; if (!c) return;
-    const ww = getWW();
-    c.width = document.fullscreenElement ? window.innerWidth : ww;
+    c.width = document.fullscreenElement ? window.innerWidth : getWW();
     c.height = document.fullscreenElement ? window.innerHeight : Math.min(600, window.innerHeight - 280);
   }
 
@@ -118,11 +117,9 @@ export default function Page() {
         const x = cv2.getContext('2d'); if (!x) { ra.current = requestAnimationFrame(loop); return; }
         const W = cv2.width, H = cv2.height, t = g.current;
 
-        // sync world width to canvas
         if (t.ww !== W) {
           const ratio = W / t.ww;
-          t.ww = W;
-          t.px *= ratio;
+          t.ww = W; t.px *= ratio;
           for (const p of t.pl) { p.x *= ratio; p.w *= ratio; }
         }
 
@@ -148,27 +145,25 @@ export default function Page() {
           ra.current = requestAnimationFrame(loop); return;
         }
 
-        // --- auto-scroll: camera moves up, player must keep up ---
+        // --- gradual speed ---
         t.spd = Math.min(MS, t.spd + SR);
-        t.cam += t.spd;
 
-        // input
+        // input: character stands still until moved
         const ks = k.current;
+        let dx = 0;
+        if (ks.has('ArrowLeft') || ks.has('KeyA')) { dx = -t.spd * 0.7; t.dir = -1; }
+        else if (ks.has('ArrowRight') || ks.has('KeyD')) { dx = t.spd * 0.7; t.dir = 1; }
+        else t.dir = 1;
+
         if ((ks.has(' ') || ks.has('ArrowUp') || ks.has('KeyW')) && !t.fl) {
           if (!t.hd) { t.hd = true; if (t.vy >= 0) { t.vy = JV; sfx(['jump_lo','jump_mid','jump_hi'][ri(0,2)]); } }
           else if (t.vy < 0) t.vy += JH;
         } else { t.hd = false; }
 
-        let dx = 0;
-        if (ks.has('ArrowLeft') || ks.has('KeyA')) dx = -t.spd * 0.8;
-        else if (ks.has('ArrowRight') || ks.has('KeyD')) dx = t.spd * 0.8;
-        if (dx > 0.5) t.dir = 1; else if (dx < -0.5) t.dir = -1;
-
         t.vy += G; t.px += dx;
         if (t.px < 0) t.px = 0;
         if (t.px > t.ww - PW) t.px = t.ww - PW;
 
-        // collision — platforms are full width, so just vertical check
         let ld = false;
         for (const p of t.pl) {
           if (t.vy >= 0 && t.py + PH >= p.y && t.py + PH <= p.y + PHit + Math.abs(t.vy) + 2) {
@@ -188,17 +183,19 @@ export default function Page() {
         if (!ld && t.vy > 0) t.fl = true;
         t.py += t.vy;
 
+        // camera: follows player up + auto-scroll drift
+        const targetCam = t.py - H * 0.3;
+        t.cam += (targetCam - t.cam) * 0.08 + t.spd * 0.3;
+
         t.scr = Math.max(t.scr, t.cam / 80);
         t.ft += t.spd * 0.06; if (t.ft > 1) { t.ft = 0; t.fr++; }
 
-        // recycle platforms
         t.pl = t.pl.filter((p: any) => p.y - t.cam < H + 50);
         while (t.pl.length < 14) {
           const l = t.pl[t.pl.length - 1];
           t.pl.push(mkPlat(l.y - rnd(GAP[0], GAP[1]), t.ww));
         }
 
-        // --- draw ---
         const gr = x.createLinearGradient(0, 0, 0, H);
         gr.addColorStop(0, '#0a0a2e'); gr.addColorStop(0.5, '#0f0f23'); gr.addColorStop(1, '#1a0a2e');
         x.fillStyle = gr; x.fillRect(0, 0, W, H);
@@ -208,19 +205,15 @@ export default function Page() {
           x.fillRect((i * 97 + 30) % W, ((((i * 137 + 50) % 600) - (t.cam * 0.5) % 600) % 600 + 600) % 600, 1.5, 1.5);
         }
 
-        // platforms — full-width bars
         for (const p of t.pl) {
           const sy = p.y - t.cam;
           if (sy < -20 || sy > H + 20) continue;
-          x.fillStyle = '#6d28d9';
-          x.fillRect(0, sy, t.ww, PHit);
-          x.fillStyle = '#8b5cf6';
-          x.fillRect(0, sy, t.ww, 3);
+          x.fillStyle = '#6d28d9'; x.fillRect(0, sy, t.ww, PHit);
+          x.fillStyle = '#8b5cf6'; x.fillRect(0, sy, t.ww, 3);
           x.fillStyle = '#4c1d95';
           for (let j = 0; j < t.ww; j += 10) x.fillRect(j, sy + PHit - 1, 5, 1);
         }
 
-        // player
         {
           const sy = t.py - t.cam;
           x.save(); x.translate(t.px + PW / 2, sy + PH / 2);
@@ -233,16 +226,14 @@ export default function Page() {
           x.restore();
         }
 
-        // HUD
         x.fillStyle = 'rgba(0,0,0,0.5)'; x.fillRect(10, 10, 170, 60);
         x.strokeStyle = '#7c3aed'; x.lineWidth = 1; x.strokeRect(10, 10, 170, 60);
         x.fillStyle = '#e5e7eb'; x.font = 'bold 14px Inter,sans-serif'; x.textAlign = 'left';
         x.fillText('Floor: ' + Math.floor(t.scr), 20, 30);
         if (t.co > 1) { x.fillStyle = '#fbbf24'; x.fillText('Combo: x' + t.co, 20, 50); }
         x.fillStyle = '#9ca3af'; x.font = '10px Inter,sans-serif'; x.textAlign = 'right';
-        x.fillText('F:FS  Arrows:move', W - 10, 22);
+        x.fillText('Arrows:move  F:FS', W - 10, 22);
 
-        // game over — player falls below the auto-scrolling camera
         if (t.py - t.cam > H * 0.8) {
           t.s = 'over';
           if (t.scr > t.hi) { t.hi = t.scr; setHi(t.scr); }
@@ -260,15 +251,15 @@ export default function Page() {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
-      <div><h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Break Time</h2><p className="text-gray-400 text-sm">Climb the tower. Camera auto-scrolls up — keep jumping or you fall behind!</p></div>
+      <div><h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Break Time</h2><p className="text-gray-400 text-sm">Climb the tower. Arrows to move, Space/Click to jump. Speed grows gradually.</p></div>
       <div ref={wr} className="bg-quantum-card/40 rounded-xl border border-gray-800/50 overflow-hidden relative flex items-center justify-center [&:fullscreen]:bg-black [&:fullscreen]:rounded-none [&:fullscreen]:border-0 [&:fullscreen]:w-screen [&:fullscreen]:h-screen">
         <canvas ref={cv} className="w-full cursor-pointer" style={{ imageRendering: 'pixelated' }} />
         <button onClick={() => { const el = wr.current; if (el) { document.fullscreenElement ? document.exitFullscreen() : el.requestFullscreen(); } }} className="absolute top-3 right-3 z-10 bg-black/50 hover:bg-black/70 text-gray-300 hover:text-white text-xs px-3 py-1.5 rounded transition-colors border border-gray-700/50">{fs ? 'Exit' : 'FS'}</button>
       </div>
       <div className="grid grid-cols-3 gap-3 text-center text-xs">
         <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40"><span className="text-gray-500 block mb-1">Jump</span><span className="text-gray-300 font-medium">SPACE / Click</span></div>
-        <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40"><span className="text-gray-500 block mb-1">Steer</span><span className="text-gray-300 font-medium">Left / Right arrows</span></div>
-        <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40"><span className="text-gray-500 block mb-1">Camera</span><span className="text-gray-300 font-medium">Scrolls up — keep up!</span></div>
+        <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40"><span className="text-gray-500 block mb-1">Move</span><span className="text-gray-300 font-medium">Left / Right arrows</span></div>
+        <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40"><span className="text-gray-500 block mb-1">Difficulty</span><span className="text-gray-300 font-medium">Gradually increases</span></div>
       </div>
     </div>
   );
