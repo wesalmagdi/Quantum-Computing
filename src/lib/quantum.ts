@@ -66,4 +66,5 @@ export const MODULES = [
   { id: 'paulix', label: 'Pauli-X Gate', desc: 'Quantum NOT' },
   { id: 'interference', label: 'Interference', desc: 'Waves combining' },
   { id: 'schrodinger', label: "Schr\u00f6dinger Eq.", desc: 'Time evolution' },
+  { id: 'break', label: 'Break Time', desc: 'Take a break — climb Icy Tower' },
 ];
