@@ -9,27 +9,22 @@ const G = 0.7, JV = -18, JH = -0.5;
 const GAP = 80;
 const CM = 2000;
 
-function rnd(a: number, b: number) { return Math.random() * (b - a) + a; }
-function ri(a: number, b: number) { return Math.floor(rnd(a, b + 1)); }
+function ri(a: number, b: number) { return Math.floor(Math.random() * (b - a + 1) + a); }
 
 function mkPlat(y: number, ww: number, i: number) {
   if (i < 3) return { x: 0, y, w: ww, hit: false };
   const w = 220;
-  const pat = [0, ww / 2 - w / 2, ww - w];
-  const x = pat[i % 3];
+  const x = i % 2 === 0 ? 0 : ww - w;
   return { x, y, w, hit: false };
 }
 
 function newG(cw: number) {
   const pl: any[] = [];
-  for (let i = 0; i < 14; i++) {
-    const y = -i * rnd(GAP - 10, GAP + 10);
-    pl.push(mkPlat(y, cw, i));
-  }
+  for (let i = 0; i < 14; i++) pl.push(mkPlat(-i * GAP, cw, i));
   return {
     s: 'menu', px: cw / 2, py: 0, vy: 0, pl, cam: 0, sc: 0.8,
     scr: 0, co: 0, bc: 0, hi: 0, ww: cw, fc: 0,
-    hd: false, fl: false, rot: 0, fr: 0, ft: 0, dir: 1, ct: 0,
+    hd: false, rot: 0, fr: 0, ft: 0, dir: 1,
   };
 }
 
@@ -37,11 +32,7 @@ const SN = ['idle1','idle2','idle3','walk1','walk2','walk3','walk4','jump','rota
 const VL = ['good','great','amazing','fantastic','splendid','extreme','super','sweet','wow','yo','cheer'];
 
 function sfx(n: string) {
-  try {
-    const a = new Audio('/icy/' + n + '.ogg');
-    a.volume = 0.5;
-    a.play().catch(() => {});
-  } catch {}
+  try { const a = new Audio('/icy/' + n + '.ogg'); a.volume = 0.5; a.play().catch(() => {}); } catch {}
 }
 
 export default function Page() {
@@ -79,11 +70,8 @@ export default function Page() {
         bg.current?.pause();
         const a = new Audio('/icy/bg_beat.ogg');
         a.loop = true; a.volume = 0.3;
-        a.play().catch(() => {});
-        bg.current = a;
-      } else {
-        bg.current?.pause();
-      }
+        a.play().catch(() => {}); bg.current = a;
+      } else { bg.current?.pause(); }
     } catch {}
   }
 
@@ -121,10 +109,6 @@ export default function Page() {
     function cl() {
       if (g.current.s === 'menu') { bgm(true); reset(); }
       else if (g.current.s === 'over') { bgm(true); reset(); }
-      else if (g.current.s === 'play' && !g.current.fl) {
-        g.current.hd = true;
-        if (g.current.vy >= 0) { g.current.vy = JV; sfx(['jump_lo','jump_mid','jump_hi'][ri(0,2)]); }
-      }
     }
 
     window.addEventListener('keydown', dk);
@@ -154,7 +138,6 @@ export default function Page() {
           if (t.hi > 0) { x.fillStyle = '#fbbf24'; x.font = '14px Inter,sans-serif'; x.fillText('Best: ' + Math.floor(t.hi) + ' floors', W / 2, H / 2 + 80); }
           ra.current = requestAnimationFrame(loop); return;
         }
-
         if (t.s === 'over') {
           x.fillStyle = '#ef4444'; x.font = 'bold 34px Inter,sans-serif'; x.fillText('Game Over', W / 2, H / 2 - 80);
           x.fillStyle = '#e5e7eb'; x.font = '19px Inter,sans-serif'; x.fillText('Height: ' + Math.floor(t.scr) + ' floors', W / 2, H / 2 - 35);
@@ -172,14 +155,17 @@ export default function Page() {
         if (ks.has('ArrowLeft') || ks.has('KeyA')) { dx = -MS; t.dir = -1; }
         else if (ks.has('ArrowRight') || ks.has('KeyD')) { dx = MS; t.dir = 1; }
 
-        if ((ks.has(' ') || ks.has('ArrowUp') || ks.has('KeyW')) && t.ct > 0) {
-          if (!t.hd) { t.hd = true; if (t.vy >= 0) { t.vy = JV; sfx(['jump_lo','jump_mid','jump_hi'][ri(0,2)]); } }
-          else if (t.vy < 0) t.vy += JH;
-        } else { t.hd = false; }
-
-        t.vy += G; t.px += dx;
+        t.vy += G;
+        t.px += dx;
         if (t.px < 0) t.px = 0;
         if (t.px > t.ww - PW) t.px = t.ww - PW;
+
+        // jump check: can jump if vy is near zero (on ground or just left it)
+        const wantJump = ks.has(' ') || ks.has('ArrowUp') || ks.has('KeyW');
+        if (wantJump && t.vy < 3) {
+          if (!t.hd) { t.hd = true; t.vy = JV; sfx(['jump_lo','jump_mid','jump_hi'][ri(0, 2)]); }
+          else if (t.vy < 0) t.vy += JH;
+        } else { t.hd = false; }
 
         let ld = false;
         const nextFeet = t.py + PH + Math.max(0, t.vy);
@@ -199,7 +185,8 @@ export default function Page() {
             break;
           }
         }
-        if (ld) { t.ct = 8; t.fl = false; } else { t.ct = Math.max(0, t.ct - 1); if (t.vy > 0) t.fl = true; }
+
+        t.py += t.vy;
 
         t.cam -= t.sc;
         if (t.py - t.cam < H * 0.08) t.cam += (t.py - H * 0.3 - t.cam) * 0.08;
@@ -210,7 +197,7 @@ export default function Page() {
         t.pl = t.pl.filter((p: any) => p.y - t.cam < H + 50);
         while (t.pl.length < 14) {
           const l = t.pl[t.pl.length - 1];
-          t.pl.push(mkPlat(l.y - rnd(GAP - 10, GAP + 10), t.ww, t.fc));
+          t.pl.push(mkPlat(l.y - GAP, t.ww, t.fc));
           t.fc++;
         }
 
@@ -237,9 +224,10 @@ export default function Page() {
           const sy = t.py - t.cam;
           x.save(); x.translate(t.px + PW / 2, sy + PH / 2);
           if (t.dir < 0) x.scale(-1, 1);
-          if (t.fl) { t.rot += 0.15; x.rotate(t.rot); } else if (t.vy < -2) x.rotate(-0.1);
-          const idle = Math.abs(dx) < 0.1 && !t.fl && t.vy >= -1;
-          const sk = t.fl ? 'rotate' : (t.vy < -1 ? 'jump' : (idle ? 'idle' + ((t.fr % 3) + 1) : 'walk' + ((t.fr % 4) + 1)));
+          if (!ld && t.vy > 0) { t.rot += 0.15; x.rotate(t.rot); }
+          else if (t.vy < -2) x.rotate(-0.1);
+          const idle = Math.abs(dx) < 0.1 && ld && t.vy >= -1;
+          const sk = ld && idle ? 'idle' + ((t.fr % 3) + 1) : (t.vy < -1 ? 'jump' : 'walk' + ((t.fr % 4) + 1));
           const img = im.current[sk] || im.current['idle1'];
           try { if (img?.complete && img.naturalWidth > 0) x.drawImage(img, -PW/2, -PH/2, PW, PH); else { x.fillStyle='#7c3aed'; x.fillRect(-PW/2, -PH/2, PW, PH); } }
           catch { x.fillStyle='#7c3aed'; x.fillRect(-PW/2, -PH/2, PW, PH); }
