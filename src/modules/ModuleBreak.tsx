@@ -88,13 +88,15 @@ function playSound(name: string) {
 
 export default function ModuleBreak() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const gameRef = useRef<GameState>(INITIAL);
   const keysRef = useRef<Set<string>>(new Set());
   const spritesRef = useRef<Record<string, HTMLImageElement>>({});
   const bgmRef = useRef<HTMLAudioElement | null>(null);
   const lastComboRef = useRef(0);
+  const loopRef = useRef<number>(0);
   const [hs, setHs] = useState(0);
-  const loadedRef = useRef(false);
+  const [fullscreen, setFullscreen] = useState(false);
 
   useEffect(() => {
     const names = [
@@ -103,18 +105,9 @@ export default function ModuleBreak() {
       'jump', 'jump1', 'jump2', 'jump3',
       'rotate', 'chock', 'edge1', 'edge2',
     ];
-    let loaded = 0;
     const imgs: Record<string, HTMLImageElement> = {};
     names.forEach((n) => {
       const img = new Image();
-      img.onload = () => {
-        loaded++;
-        if (loaded === names.length) loadedRef.current = true;
-      };
-      img.onerror = () => {
-        loaded++;
-        if (loaded === names.length) loadedRef.current = true;
-      };
       img.src = `/icy/${n}.png`;
       imgs[n] = img;
     });
@@ -133,6 +126,24 @@ export default function ModuleBreak() {
 
   const stopBGM = useCallback(() => {
     bgmRef.current?.pause();
+  }, []);
+
+  const toggleFullscreen = useCallback(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+      setFullscreen(false);
+    } else {
+      el.requestFullscreen();
+      setFullscreen(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const onFsChange = () => setFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', onFsChange);
+    return () => document.removeEventListener('fullscreenchange', onFsChange);
   }, []);
 
   const resetGame = useCallback(() => {
@@ -168,23 +179,17 @@ export default function ModuleBreak() {
     g.player.x = g.platforms[0].x + 20;
   }, []);
 
-  const getSprite = useCallback((state: string) => {
-    const s = spritesRef.current;
-    if (state === 'falling') return s['rotate'] || s['idle1'];
-    if (state === 'jumping') return s['jump'] || s['idle1'];
-    const g = gameRef.current;
-    const frame = g.animFrame;
-    if (state === 'walking') {
-      const w = s[`walk${(frame % 4) + 1}`] || s['walk1'];
-      return w;
-    }
-    return s[`idle${frame % 3 + 1}`] || s['idle1'];
-  }, []);
-
-  const drawPlayer = useCallback((ctx: CanvasRenderingContext2D, g: GameState) => {
+  const drawPlayer = (ctx: CanvasRenderingContext2D, g: GameState) => {
     const p = g.player;
     const screenY = p.y - g.cameraY;
-    const sprite = getSprite(g.falling ? 'falling' : (p.vy < -1 ? 'jumping' : 'walking'));
+    const s = spritesRef.current;
+
+    let spriteKey: string;
+    if (g.falling) spriteKey = 'rotate';
+    else if (p.vy < -1) spriteKey = 'jump';
+    else spriteKey = `walk${(g.animFrame % 4) + 1}`;
+    const sprite = s[spriteKey] || s['idle1'];
+
     ctx.save();
     ctx.translate(p.x + p.w / 2, screenY + p.h / 2);
 
@@ -218,9 +223,9 @@ export default function ModuleBreak() {
       ctx.fillRect(p.x - 5, screenY - 5, p.w + 10, p.h + 10);
       ctx.restore();
     }
-  }, [getSprite]);
+  };
 
-  const drawPlatform = useCallback((ctx: CanvasRenderingContext2D, plat: Platform, cameraY: number) => {
+  const drawPlatform = (ctx: CanvasRenderingContext2D, plat: Platform, cameraY: number) => {
     const screenY = plat.y - cameraY;
     const s = spritesRef.current;
     const edgeL = s['edge1'];
@@ -249,9 +254,9 @@ export default function ModuleBreak() {
         ctx.fillRect(bx, screenY, BLOCK_W, BLOCK_H);
       }
     }
-  }, []);
+  };
 
-  const generatePlatform = useCallback((g: GameState) => {
+  const generatePlatform = (g: GameState) => {
     const lastY = g.platforms.length > 0 ? g.platforms[g.platforms.length - 1].y : 0;
     const gap = rand(PLATFORM_GAP_MIN, PLATFORM_GAP_MAX);
     const y = lastY - gap;
@@ -260,8 +265,7 @@ export default function ModuleBreak() {
 
     if (g.platforms.length > 0) {
       const prev = g.platforms[g.platforms.length - 1];
-      const prevRight = prev.x + prev.blocks * BLOCK_W;
-      const overlap = (x < prevRight + 60 && x + blocks * BLOCK_W > prev.x - 60);
+      const overlap = (x < prev.x + prev.blocks * BLOCK_W + 60 && x + blocks * BLOCK_W > prev.x - 60);
       if (overlap) {
         if (Math.random() > 0.5) x = prev.x + prev.blocks * BLOCK_W + rand(20, 80);
         else x = prev.x - blocks * BLOCK_W - rand(20, 80);
@@ -270,7 +274,7 @@ export default function ModuleBreak() {
     x = Math.max(0, Math.min(x, WRAP_AROUND - blocks * BLOCK_W));
 
     g.platforms.push({ x, y, blocks, scored: false });
-  }, []);
+  };
 
   const gameLoop = useCallback(() => {
     const canvas = canvasRef.current;
@@ -307,7 +311,13 @@ export default function ModuleBreak() {
 
       ctx.fillStyle = '#6b7280';
       ctx.font = '12px Inter, sans-serif';
-      ctx.fillText('Hold SPACE/Click longer = higher jump', W / 2, H - 40);
+      ctx.fillText('Hold SPACE/Click longer = higher jump', W / 2, H - 80);
+
+      ctx.fillStyle = '#4b5563';
+      ctx.font = '11px Inter, sans-serif';
+      ctx.fillText('Press F or click Fullscreen for larger view', W / 2, H - 55);
+
+      loopRef.current = requestAnimationFrame(gameLoop);
       return;
     }
 
@@ -341,10 +351,11 @@ export default function ModuleBreak() {
       ctx.fillStyle = '#6b7280';
       ctx.font = '11px Inter, sans-serif';
       ctx.fillText('ESC for menu', W / 2, H - 30);
+
+      loopRef.current = requestAnimationFrame(gameLoop);
       return;
     }
 
-    const dt = 1;
     const p = g.player;
     const keys = keysRef.current;
 
@@ -357,17 +368,20 @@ export default function ModuleBreak() {
           playSound(randInt(0, 2) === 0 ? 'jump_lo' : (randInt(0, 1) === 0 ? 'jump_mid' : 'jump_hi'));
         }
       } else {
-        g.jumpHold += dt * 16;
+        g.jumpHold += 16;
         if (g.jumpHold < MAX_JUMP_HOLD && p.vy < 0) {
-          p.vy += JUMP_HOLD_BOOST * dt;
+          p.vy += JUMP_HOLD_BOOST;
         }
       }
     } else {
-      if (g.jumpHeld) g.jumpHeld = false;
+      if (g.jumpHeld) {
+        g.jumpHeld = false;
+        g.jumpHold = 0;
+      }
     }
 
-    p.vy += GRAVITY * dt;
-    p.x += g.speed * dt;
+    p.vy += GRAVITY;
+    p.x += g.speed;
 
     if (p.x > WRAP_AROUND) p.x -= WRAP_AROUND;
     if (p.x < 0) p.x += WRAP_AROUND;
@@ -398,8 +412,7 @@ export default function ModuleBreak() {
             if (g.combo === 2) playSound('good');
             else if (g.combo === 3) playSound('great');
             else if (g.combo >= 4) {
-              const vl = VOICE_LINES[randInt(0, VOICE_LINES.length - 1)];
-              playSound(vl);
+              playSound(VOICE_LINES[randInt(0, VOICE_LINES.length - 1)]);
             }
           } else {
             g.combo = 1;
@@ -412,16 +425,16 @@ export default function ModuleBreak() {
       }
     }
 
-    if (!onPlat && g.player.vy > 0) {
+    if (!onPlat && p.vy > 0) {
       g.falling = true;
     }
 
-    p.y += p.vy * dt;
+    p.y += p.vy;
 
     const targetCam = p.y - H * 0.35;
     g.cameraY += (targetCam - g.cameraY) * 0.08;
 
-    g.speed = Math.min(MAX_SPEED, g.speed + SPEED_INCREMENT * dt);
+    g.speed = Math.min(MAX_SPEED, g.speed + SPEED_INCREMENT);
 
     g.score = Math.max(g.score, -g.cameraY / PLATFORM_SPACING);
 
@@ -457,22 +470,13 @@ export default function ModuleBreak() {
       ctx.fillRect(starX, ((starY % 600) + 600) % 600, 1.5, 1.5);
     }
 
-    ctx.save();
-    const wide = WRAP_AROUND;
     for (const plat of g.platforms) {
       drawPlatform(ctx, plat, g.cameraY);
       if (plat.x + plat.blocks * BLOCK_W > WRAP_AROUND) {
         const overflow = plat.x + plat.blocks * BLOCK_W - WRAP_AROUND;
-        const wrapPlat: Platform = {
-          x: 0,
-          y: plat.y,
-          blocks: Math.ceil(overflow / BLOCK_W),
-          scored: plat.scored,
-        };
-        drawPlatform(ctx, wrapPlat, g.cameraY);
+        drawPlatform(ctx, { x: 0, y: plat.y, blocks: Math.ceil(overflow / BLOCK_W), scored: plat.scored }, g.cameraY);
       }
     }
-    ctx.restore();
 
     drawPlayer(ctx, g);
 
@@ -487,9 +491,9 @@ export default function ModuleBreak() {
     ctx.textAlign = 'left';
     ctx.fillText(`Floor: ${Math.floor(g.score)}`, 22, 32);
 
-    ctx.fillStyle = '#fbbf24';
-    ctx.font = 'bold 14px Inter, sans-serif';
     if (g.combo > 1) {
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = 'bold 14px Inter, sans-serif';
       ctx.fillText(`Combo: x${g.combo}`, 22, 52);
     }
 
@@ -497,7 +501,7 @@ export default function ModuleBreak() {
     ctx.font = '11px Inter, sans-serif';
     ctx.fillText(`Speed: ${g.speed.toFixed(1)}`, 22, 72);
 
-    if (g.player.y - g.cameraY > H + 100) {
+    if (p.y - g.cameraY > H + 100) {
       g.state = 'gameover';
       if (g.score > g.highScore) {
         g.highScore = g.score;
@@ -505,27 +509,41 @@ export default function ModuleBreak() {
       }
       playSound('gameover');
       stopBGM();
-      requestAnimationFrame(gameLoop);
+      loopRef.current = requestAnimationFrame(gameLoop);
       return;
     }
 
-    requestAnimationFrame(gameLoop);
-  }, [drawPlatform, drawPlayer, generatePlatform, stopBGM]);
+    loopRef.current = requestAnimationFrame(gameLoop);
+  }, [stopBGM]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+
     const resize = () => {
-      if (canvas) {
-        canvas.width = Math.min(WRAP_AROUND, window.innerWidth - 40);
-        canvas.height = Math.min(700, window.innerHeight - 120);
+      if (!canvas) return;
+      const isFs = !!document.fullscreenElement;
+      if (isFs) {
+        canvas.width = Math.min(WRAP_AROUND, window.innerWidth);
+        canvas.height = window.innerHeight;
+      } else {
+        canvas.width = Math.min(WRAP_AROUND, window.innerWidth - 48);
+        canvas.height = Math.min(600, window.innerHeight - 280);
       }
     };
-    resize();
+
     window.addEventListener('resize', resize);
+    resize();
 
     const handleKey = (e: KeyboardEvent) => {
+      if (e.repeat) return;
       keysRef.current.add(e.code === 'Space' ? ' ' : e.code);
+
+      if (e.code === 'KeyF') {
+        toggleFullscreen();
+        return;
+      }
+
       const g = gameRef.current;
       if (g.state === 'menu') {
         if (e.code === 'Space' || e.code === 'Enter') {
@@ -544,6 +562,7 @@ export default function ModuleBreak() {
         }
       }
     };
+
     const handleKeyUp = (e: KeyboardEvent) => {
       keysRef.current.delete(e.code === 'Space' ? ' ' : e.code);
     };
@@ -559,39 +578,55 @@ export default function ModuleBreak() {
       }
     };
 
+    const handleFsKey = (e: KeyboardEvent) => {
+      if (e.code === 'KeyF') toggleFullscreen();
+    };
+
     window.addEventListener('keydown', handleKey);
     window.addEventListener('keyup', handleKeyUp);
     canvas.addEventListener('click', handleClick);
+    window.addEventListener('keydown', handleFsKey);
 
     const g = gameRef.current;
     g.state = 'menu';
     g.highScore = hs;
 
-    gameLoop();
+    loopRef.current = requestAnimationFrame(gameLoop);
 
     return () => {
+      cancelAnimationFrame(loopRef.current);
       window.removeEventListener('resize', resize);
       window.removeEventListener('keydown', handleKey);
       window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('keydown', handleFsKey);
       canvas.removeEventListener('click', handleClick);
     };
-  }, [gameLoop, resetGame, startBGM, hs]);
+  }, [gameLoop, resetGame, startBGM, hs, toggleFullscreen]);
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       <div>
-        <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Break Time 🧊</h2>
+        <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Break Time</h2>
         <p className="text-gray-400 text-sm">
           Climb the Icy Tower. Hold space/click to jump higher. Speed increases as you climb.
         </p>
       </div>
 
-      <div className="bg-quantum-card/40 rounded-xl border border-gray-800/50 overflow-hidden flex items-center justify-center">
+      <div
+        ref={wrapperRef}
+        className="bg-quantum-card/40 rounded-xl border border-gray-800/50 overflow-hidden relative flex items-center justify-center [&:fullscreen]:bg-black [&:fullscreen]:rounded-none [&:fullscreen]:border-0 [&:fullscreen]:w-screen [&:fullscreen]:h-screen"
+      >
         <canvas
           ref={canvasRef}
           className="w-full cursor-pointer"
-          style={{ maxWidth: `${WRAP_AROUND}px`, imageRendering: 'pixelated' }}
+          style={{ imageRendering: 'pixelated', maxWidth: `${WRAP_AROUND}px` }}
         />
+        <button
+          onClick={toggleFullscreen}
+          className="absolute top-3 right-3 z-10 bg-black/50 hover:bg-black/70 text-gray-300 hover:text-white text-xs px-3 py-1.5 rounded transition-colors border border-gray-700/50"
+        >
+          {fullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+        </button>
       </div>
 
       <div className="grid grid-cols-3 gap-3 text-center text-xs">
@@ -604,8 +639,8 @@ export default function ModuleBreak() {
           <span className="text-gray-300 font-medium">Hold longer = jump higher</span>
         </div>
         <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40">
-          <span className="text-gray-500 block mb-1">Speed</span>
-          <span className="text-gray-300 font-medium">Increases as you climb!</span>
+          <span className="text-gray-500 block mb-1">Fullscreen</span>
+          <span className="text-gray-300 font-medium">Press F or click button</span>
         </div>
       </div>
     </div>
