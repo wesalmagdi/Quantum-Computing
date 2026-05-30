@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-const G = 0.45, JV = -11, JH = -0.28;
-const BS = 0.3, SR = 0.00025, MS = 10;
+const G = 0.45, JV = -12, JH = -0.3;
+const MS = 5, SR = 0.0005, MAX = 15;
 const PH = 52, PW = 30, PHit = 14;
-const GAP = [70, 110];
+const GAP = [65, 100];
 const CM = 2000;
 
 function rnd(a: number, b: number) { return Math.random() * (b - a) + a; }
@@ -19,7 +19,7 @@ function newG(cw: number) {
   const pl: any[] = [];
   for (let i = 0; i < 14; i++) pl.push(mkPlat(-i * rnd(GAP[0], GAP[1]), cw));
   return {
-    s: 'menu', px: cw / 2, py: 0, vy: 0, pl, cam: 0, spd: BS,
+    s: 'menu', px: cw / 2, py: 0, vy: 0, pl, cam: 0, sc: 0.5,
     scr: 0, co: 0, bc: 0, hi: 0, ww: cw,
     hd: false, fl: false, rot: 0, fr: 0, ft: 0, dir: 1,
   };
@@ -145,14 +145,14 @@ export default function Page() {
           ra.current = requestAnimationFrame(loop); return;
         }
 
-        // --- gradual speed ---
-        t.spd = Math.min(MS, t.spd + SR);
+        // --- speed ramps up ---
+        t.sc = Math.min(MAX, t.sc + SR);
 
-        // input: character stands still until moved
+        // input: arrow keys to move at a fixed fast speed
         const ks = k.current;
         let dx = 0;
-        if (ks.has('ArrowLeft') || ks.has('KeyA')) { dx = -t.spd * 0.7; t.dir = -1; }
-        else if (ks.has('ArrowRight') || ks.has('KeyD')) { dx = t.spd * 0.7; t.dir = 1; }
+        if (ks.has('ArrowLeft') || ks.has('KeyA')) { dx = -MS; t.dir = -1; }
+        else if (ks.has('ArrowRight') || ks.has('KeyD')) { dx = MS; t.dir = 1; }
 
         if ((ks.has(' ') || ks.has('ArrowUp') || ks.has('KeyW')) && !t.fl) {
           if (!t.hd) { t.hd = true; if (t.vy >= 0) { t.vy = JV; sfx(['jump_lo','jump_mid','jump_hi'][ri(0,2)]); } }
@@ -182,12 +182,13 @@ export default function Page() {
         if (!ld && t.vy > 0) t.fl = true;
         t.py += t.vy;
 
-        // camera: follows player up + auto-scroll drift
-        const targetCam = t.py - H * 0.3;
-        t.cam += (targetCam - t.cam) * 0.08 + t.spd * 0.3;
+        // camera: auto-scrolls up + follows player jumps
+        t.cam += t.sc;
+        const target = t.py - H * 0.3;
+        if (target < t.cam) t.cam += (target - t.cam) * 0.06;
 
         t.scr = Math.max(t.scr, t.cam / 80);
-        t.ft += t.spd * 0.06; if (t.ft > 1) { t.ft = 0; t.fr++; }
+        t.ft += t.sc * 0.06; if (t.ft > 1) { t.ft = 0; t.fr++; }
 
         t.pl = t.pl.filter((p: any) => p.y - t.cam < H + 50);
         while (t.pl.length < 14) {
@@ -218,8 +219,8 @@ export default function Page() {
           x.save(); x.translate(t.px + PW / 2, sy + PH / 2);
           if (t.dir < 0) x.scale(-1, 1);
           if (t.fl) { t.rot += 0.15; x.rotate(t.rot); } else if (t.vy < -2) x.rotate(-0.1);
-          const standing = Math.abs(dx) < 0.1 && !t.fl && t.vy >= -1;
-          const sk = t.fl ? 'rotate' : (t.vy < -1 ? 'jump' : (standing ? 'idle' + ((t.fr % 3) + 1) : 'walk' + ((t.fr % 4) + 1)));
+          const idle = Math.abs(dx) < 0.1 && !t.fl && t.vy >= -1;
+          const sk = t.fl ? 'rotate' : (t.vy < -1 ? 'jump' : (idle ? 'idle' + ((t.fr % 3) + 1) : 'walk' + ((t.fr % 4) + 1)));
           const img = im.current[sk] || im.current['idle1'];
           try { if (img?.complete && img.naturalWidth > 0) x.drawImage(img, -PW/2, -PH/2, PW, PH); else { x.fillStyle='#7c3aed'; x.fillRect(-PW/2, -PH/2, PW, PH); } }
           catch { x.fillStyle='#7c3aed'; x.fillRect(-PW/2, -PH/2, PW, PH); }
@@ -251,7 +252,7 @@ export default function Page() {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
-      <div><h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Break Time</h2><p className="text-gray-400 text-sm">Climb the tower. Arrows to move, Space/Click to jump. Speed grows gradually.</p></div>
+      <div><h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Break Time</h2><p className="text-gray-400 text-sm">Screen auto-scrolls — jump to keep up! Arrows to move, Space/Click to jump.</p></div>
       <div ref={wr} className="bg-quantum-card/40 rounded-xl border border-gray-800/50 overflow-hidden relative flex items-center justify-center [&:fullscreen]:bg-black [&:fullscreen]:rounded-none [&:fullscreen]:border-0 [&:fullscreen]:w-screen [&:fullscreen]:h-screen">
         <canvas ref={cv} className="w-full cursor-pointer" style={{ imageRendering: 'pixelated' }} />
         <button onClick={() => { const el = wr.current; if (el) { document.fullscreenElement ? document.exitFullscreen() : el.requestFullscreen(); } }} className="absolute top-3 right-3 z-10 bg-black/50 hover:bg-black/70 text-gray-300 hover:text-white text-xs px-3 py-1.5 rounded transition-colors border border-gray-700/50">{fs ? 'Exit' : 'FS'}</button>
@@ -259,7 +260,7 @@ export default function Page() {
       <div className="grid grid-cols-3 gap-3 text-center text-xs">
         <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40"><span className="text-gray-500 block mb-1">Jump</span><span className="text-gray-300 font-medium">SPACE / Click</span></div>
         <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40"><span className="text-gray-500 block mb-1">Move</span><span className="text-gray-300 font-medium">Left / Right arrows</span></div>
-        <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40"><span className="text-gray-500 block mb-1">Difficulty</span><span className="text-gray-300 font-medium">Gradually increases</span></div>
+        <div className="bg-quantum-card/50 rounded-lg p-3 border border-gray-800/40"><span className="text-gray-500 block mb-1">Camera</span><span className="text-gray-300 font-medium">Auto-scrolls up!</span></div>
       </div>
     </div>
   );
