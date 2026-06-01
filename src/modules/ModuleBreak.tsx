@@ -169,7 +169,7 @@ export default function Page() {
 
         const wantJump = ks.has(' ') || ks.has('ArrowUp') || ks.has('KeyW');
         if (wantJump && !t.fl) {
-          if (!t.hd) { t.hd = true; t.vy = JV; sfx(['jump_lo','jump_mid','jump_hi'][ri(0, 2)]); }
+          if (!t.hd && t.vy >= 0) { t.hd = true; t.vy = JV; sfx(['jump_lo','jump_mid','jump_hi'][ri(0, 2)]); }
           else if (t.vy < 0) t.vy += JH;
         } else { t.hd = false; }
 
