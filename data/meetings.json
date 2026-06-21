@@ -1,27 +1,27 @@
 [
   {
     "id": "1",
-    "title": "Initial Brainstorming Session",
-    "date": "2026-02-15",
-    "discussed": "We discussed potential project ideas and settled on building an interactive quantum computing learning platform. The main goal is to make quantum concepts intuitive through visualizations and hands-on modules.",
+    "title": "First Meeting — Project Kickoff",
+    "date": "2026-05-24",
+    "discussed": "Brief summary of the main points discussed:\n\n• Mention of Richard Feynman and the idea that simulating nature is best done using nature itself.\n• NISQ+ era and its potential applications.\n• Concept of LOCC.\n• Challenge of the Barren Plateau problem, where training becomes harder as qubit count increases.\n• Mention of NVIDIA Quantum DGX as a hybrid quantum-classical platform.\n• The Coming Wave (reference/material)\n\nPotential application areas:\n• Reinforcement Learning with NISQ+ for molecular-related problems\n• Electronic structure problems and molecular-level design\n\nQuantum software/tools discussed:\n• PennyLane\n• Qiskit\n• Xanadu tools/platforms\n\nAdditional resources:\n• Scientific American\n• Egyptian Knowledge Bank\n• Summer schools and learning opportunities",
     "actionItems": [
-      { "text": "Research existing quantum learning platforms", "done": true },
-      { "text": "Set up Next.js project with Three.js", "done": true },
-      { "text": "Draft initial module list (intro, qubit, superposition, etc.)", "done": true },
-      { "text": "Create wireframes for the main layout", "done": true }
+      { "text": "Research NISQ+ era and its applications", "done": true },
+      { "text": "Look into PennyLane, Qiskit, and Xanadu tools", "done": true },
+      { "text": "Read 'The Coming Wave' reference material", "done": true },
+      { "text": "Explore Egyptian Knowledge Bank for resources", "done": false }
     ],
     "attachments": []
   },
   {
     "id": "2",
-    "title": "Module Design & Content Planning",
-    "date": "2026-02-28",
-    "discussed": "Reviewed the first draft of all quantum modules. Decided on the interactive approach: each module should have a video explanation, an interactive 3D visualization, and a quiz. We assigned topics to team members.",
+    "title": "Second Meeting — Quantum RL & Project Direction",
+    "date": "2026-06-03",
+    "discussed": "Discussion Points:\n• Overview of QRL and quantum state preparation.\n• Agent–environment configurations: Classical–Quantum (CQ) and Quantum–Quantum (QQ)\n• Relationship between Reinforcement Learning (RL) and Quantum Simulation.\n• Quantum simulators are used to simulate physical systems (e.g., molecules and many-body systems), not necessarily quantum computers themselves.\n• Importance of many-body systems in physics, material science, and computational chemistry.\n\nReferences Mentioned:\n• What's a Quantum Computer Good For Anyway? (Scientific American)\n• Fundamentals of Physics (highlighted sections)\n• Reinforcement Learning for Quantum Technology\n• RL-Assisted Quantum Simulation of Many-Body Systems (arXiv)\n• Quantum Simulation + RL paper (18 May 2026)\n• arXiv: 2601.18953\n• Physical Review A, Vol. 112\n• RL-CSE GitHub (Jiaji Zhang)\n• ML-CQE GitHub\n\nProposed Project Direction:\nDevelop a tool that combines Quantum Simulation and Reinforcement Learning, where an RL agent assists in simulating and optimizing complex physical systems, particularly quantum many-body systems and applications in computational chemistry.",
     "actionItems": [
-      { "text": "Finalize Bloch sphere visualization component", "done": true },
-      { "text": "Write quiz questions for all modules", "done": true },
-      { "text": "Find and embed relevant YouTube videos for each topic", "done": true },
-      { "text": "Design the sidebar navigation with progress tracking", "done": true }
+      { "text": "Read the referenced papers (arXiv: 2601.18953, etc.)", "done": false },
+      { "text": "Explore RL-CSE and ML-CQE GitHub repos", "done": false },
+      { "text": "Define project scope combining QRL + Quantum Simulation", "done": false },
+      { "text": "Research many-body systems in computational chemistry", "done": false }
     ],
     "attachments": []
   }
