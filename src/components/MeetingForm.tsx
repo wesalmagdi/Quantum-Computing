@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 
 export default function MeetingForm({ onSaved, onCancel }: {
   onSaved: () => void;
@@ -25,7 +26,13 @@ export default function MeetingForm({ onSaved, onCancel }: {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-journey-card rounded-xl border border-journey-border p-5 shadow-sm">
+    <motion.form
+      initial={{ opacity: 0, y: -16, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -16, scale: 0.98 }}
+      onSubmit={handleSubmit}
+      className="bg-journey-card rounded-xl border border-journey-border p-5 shadow-sm"
+    >
       <h2 className="text-sm font-semibold text-journey-text mb-4">New Meeting</h2>
 
       <div className="space-y-3">
@@ -36,7 +43,7 @@ export default function MeetingForm({ onSaved, onCancel }: {
             value={title}
             onChange={e => setTitle(e.target.value)}
             placeholder="e.g. Sprint Planning — Week 5"
-            className="w-full px-3 py-2 text-sm border border-journey-border rounded-lg focus:outline-none focus:ring-2 focus:ring-journey-primary/30 focus:border-journey-primary"
+            className="w-full px-3 py-2 text-sm border border-journey-border rounded-lg focus:outline-none focus:ring-2 focus:ring-journey-primary/30 focus:border-journey-primary bg-journey-bg text-journey-text"
             required
           />
         </div>
@@ -46,7 +53,7 @@ export default function MeetingForm({ onSaved, onCancel }: {
             type="date"
             value={date}
             onChange={e => setDate(e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-journey-border rounded-lg focus:outline-none focus:ring-2 focus:ring-journey-primary/30 focus:border-journey-primary"
+            className="w-full px-3 py-2 text-sm border border-journey-border rounded-lg focus:outline-none focus:ring-2 focus:ring-journey-primary/30 focus:border-journey-primary bg-journey-bg text-journey-text"
             required
           />
         </div>
@@ -57,19 +64,21 @@ export default function MeetingForm({ onSaved, onCancel }: {
             onChange={e => setDiscussed(e.target.value)}
             rows={4}
             placeholder="Notes from the meeting..."
-            className="w-full px-3 py-2 text-sm border border-journey-border rounded-lg focus:outline-none focus:ring-2 focus:ring-journey-primary/30 focus:border-journey-primary resize-y"
+            className="w-full px-3 py-2 text-sm border border-journey-border rounded-lg focus:outline-none focus:ring-2 focus:ring-journey-primary/30 focus:border-journey-primary bg-journey-bg text-journey-text resize-y"
           />
         </div>
       </div>
 
       <div className="flex items-center gap-2 mt-4">
-        <button
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           type="submit"
           disabled={saving || !title.trim()}
           className="px-4 py-2 bg-journey-primary text-white text-sm font-medium rounded-lg hover:bg-journey-primary-dark disabled:opacity-50 transition-colors"
         >
           {saving ? 'Saving...' : 'Save Meeting'}
-        </button>
+        </motion.button>
         <button
           type="button"
           onClick={onCancel}
@@ -78,6 +87,6 @@ export default function MeetingForm({ onSaved, onCancel }: {
           Cancel
         </button>
       </div>
-    </form>
+    </motion.form>
   );
 }
