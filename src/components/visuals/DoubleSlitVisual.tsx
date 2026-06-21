@@ -2,7 +2,7 @@
 
 export default function DoubleSlitVisual() {
   return (
-    <div className="bg-white rounded-xl p-6 border border-journey-border">
+    <div className="bg-journey-card rounded-xl p-6 border border-journey-border">
       <h3 className="font-bold text-journey-text mb-4 tracking-wide text-sm uppercase">The Double-Slit Experiment</h3>
 
       <svg width="100%" height="160" viewBox="0 0 600 160" className="w-full mb-4">

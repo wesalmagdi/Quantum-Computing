@@ -44,7 +44,7 @@ export default function IntuitionCard({
   const s = steps[step];
 
   return (
-    <div className="bg-white rounded-xl p-6 border border-journey-border">
+    <div className="bg-journey-card rounded-xl p-6 border border-journey-border">
       <div className="flex items-center gap-2 mb-5">
         {steps.map((_, i) => (
           <div

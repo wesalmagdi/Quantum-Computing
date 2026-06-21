@@ -25,7 +25,7 @@ export default function MeetingForm({ onSaved, onCancel }: {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-journey-border p-5 shadow-sm">
+    <form onSubmit={handleSubmit} className="bg-journey-card rounded-xl border border-journey-border p-5 shadow-sm">
       <h2 className="text-sm font-semibold text-journey-text mb-4">New Meeting</h2>
 
       <div className="space-y-3">

@@ -41,7 +41,7 @@ export default function ModuleQuiz({ questions }: { questions: QuizQuestion[] })
 
   if (finished) {
     return (
-      <div className="bg-white rounded-xl p-6 border border-journey-border text-center">
+      <div className="bg-journey-card rounded-xl p-6 border border-journey-border text-center">
         <div className="text-3xl mb-3">{score === total ? '🎉' : score >= total / 2 ? '👍' : '💪'}</div>
         <h3 className="text-lg font-bold text-journey-text mb-1">Quiz Complete!</h3>
         <p className="text-3xl font-bold text-journey-primary mb-2">{score}/{total}</p>
@@ -56,7 +56,7 @@ export default function ModuleQuiz({ questions }: { questions: QuizQuestion[] })
   }
 
   return (
-    <div className="bg-white rounded-xl border border-journey-border overflow-hidden">
+    <div className="bg-journey-card rounded-xl border border-journey-border overflow-hidden">
       <div className="p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xs font-semibold text-journey-muted uppercase tracking-widest">Quiz</h3>

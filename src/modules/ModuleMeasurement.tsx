@@ -53,7 +53,7 @@ export default function ModuleMeasurement() {
         ]}
       />
 
-      <div className="bg-white rounded-xl p-6 border border-journey-border">
+      <div className="bg-journey-card rounded-xl p-6 border border-journey-border">
         <AmplitudeControls theta={theta} phi={phi} onThetaChange={setTheta} onPhiChange={setPhi} disabled={running} />
       </div>
 
@@ -67,7 +67,7 @@ export default function ModuleMeasurement() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl p-6 border border-journey-border"
+          className="bg-journey-card rounded-xl p-6 border border-journey-border"
         >
           <h3 className="font-bold text-journey-text mb-4 text-sm uppercase tracking-wide">Observed Results</h3>
 

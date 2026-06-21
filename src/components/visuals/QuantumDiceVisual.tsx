@@ -8,7 +8,7 @@ export default function QuantumDiceVisual({ p0, results, onRoll }: {
   onRoll: () => void;
 }) {
   return (
-    <div className="bg-white rounded-xl p-6 border border-journey-border">
+    <div className="bg-journey-card rounded-xl p-6 border border-journey-border">
       <h3 className="font-bold text-journey-text mb-4 tracking-wide text-sm uppercase">The Quantum Die</h3>
 
       <div className="grid grid-cols-2 gap-6 items-center mb-4">
@@ -84,7 +84,7 @@ export default function QuantumDiceVisual({ p0, results, onRoll }: {
                   animate={{ width: `${(results.ones / (results.zeros + results.ones)) * 100}%` }}
                   transition={{ duration: 0.5 }}
                 />
-                <div className="absolute top-0 bottom-0 w-0.5 bg-white/50" style={{ left: `${p0 * 100}%` }} />
+                <div className="absolute top-0 bottom-0 w-0.5 bg-journey-border" style={{ left: `${p0 * 100}%` }} />
               </div>
               <div className="text-[10px] text-journey-muted text-right">
                 expected (|) vs observed

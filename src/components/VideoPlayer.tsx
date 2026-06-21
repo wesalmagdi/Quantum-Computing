@@ -11,7 +11,7 @@ export default function VideoPlayer({ videoId, title, description }: {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="bg-white rounded-xl border border-journey-border overflow-hidden">
+    <div className="bg-journey-card rounded-xl border border-journey-border overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center gap-3 p-4 hover:bg-journey-surface transition-colors text-left"

@@ -40,7 +40,7 @@ export default function ModuleIntro() {
         onBlendChange={setQubitBlend}
       />
 
-      <div className="bg-white rounded-xl p-6 border border-journey-border">
+      <div className="bg-journey-card rounded-xl p-6 border border-journey-border">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-bold text-journey-text">The Notation: What is with the vertical bar and angle bracket?</h3>
           <button
@@ -99,7 +99,7 @@ export default function ModuleIntro() {
         )}
       </div>
 
-      <div className="bg-white/50 rounded-xl p-5 border border-journey-border">
+      <div className="bg-journey-card/50 rounded-xl p-5 border border-journey-border">
         <p className="text-sm text-journey-muted text-center leading-relaxed">
           <strong className="text-journey-text">Key idea:</strong> A classical bit is {bitValue} or the opposite &mdash; like a switch.
           A <strong className="text-journey-text">qubit</strong> can be a blend of

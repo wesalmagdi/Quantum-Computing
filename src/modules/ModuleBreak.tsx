@@ -269,14 +269,14 @@ export default function Page() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       <div><h2 className="text-3xl font-bold text-journey-text mb-2 tracking-tight">Break Time</h2><p className="text-journey-muted text-sm">Screen auto-scrolls — jump to keep up! Arrows to move, Space/Click to jump.</p></div>
-      <div ref={wr} className="bg-white/40 rounded-xl border border-journey-border overflow-hidden relative flex items-center justify-center [&:fullscreen]:bg-black [&:fullscreen]:rounded-none [&:fullscreen]:border-0 [&:fullscreen]:w-screen [&:fullscreen]:h-screen">
+      <div ref={wr} className="bg-journey-card/40 rounded-xl border border-journey-border overflow-hidden relative flex items-center justify-center [&:fullscreen]:bg-black [&:fullscreen]:rounded-none [&:fullscreen]:border-0 [&:fullscreen]:w-screen [&:fullscreen]:h-screen">
         <canvas ref={cv} className="cursor-pointer" style={{ imageRendering: 'pixelated' }} />
         <button onClick={() => { const el = wr.current; if (el) { document.fullscreenElement ? document.exitFullscreen() : el.requestFullscreen(); } }} className="absolute top-3 right-3 z-10 bg-journey-border hover:bg-journey-border/70 text-journey-text hover:text-journey-text text-xs px-3 py-1.5 rounded transition-colors border border-journey-border">{fs ? 'Exit' : 'FS'}</button>
       </div>
       <div className="grid grid-cols-3 gap-3 text-center text-xs">
-        <div className="bg-white/50 rounded-lg p-3 border border-journey-border"><span className="text-journey-muted block mb-1">Jump</span><span className="text-journey-text font-medium">SPACE / Click</span></div>
-        <div className="bg-white/50 rounded-lg p-3 border border-journey-border"><span className="text-journey-muted block mb-1">Move</span><span className="text-journey-text font-medium">Left / Right arrows</span></div>
-        <div className="bg-white/50 rounded-lg p-3 border border-journey-border"><span className="text-journey-muted block mb-1">Camera</span><span className="text-journey-text font-medium">Auto-scrolls up!</span></div>
+        <div className="bg-journey-card/50 rounded-lg p-3 border border-journey-border"><span className="text-journey-muted block mb-1">Jump</span><span className="text-journey-text font-medium">SPACE / Click</span></div>
+        <div className="bg-journey-card/50 rounded-lg p-3 border border-journey-border"><span className="text-journey-muted block mb-1">Move</span><span className="text-journey-text font-medium">Left / Right arrows</span></div>
+        <div className="bg-journey-card/50 rounded-lg p-3 border border-journey-border"><span className="text-journey-muted block mb-1">Camera</span><span className="text-journey-text font-medium">Auto-scrolls up!</span></div>
       </div>
     </div>
   );

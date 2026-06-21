@@ -62,7 +62,7 @@ export default function MeetingList() {
           <button
             key={m.id}
             onClick={() => setSelected(m)}
-            className="w-full text-left bg-white rounded-xl border border-journey-border p-4 hover:shadow-md transition-all hover:border-journey-primary/30"
+            className="w-full text-left bg-journey-card rounded-xl border border-journey-border p-4 hover:shadow-md transition-all hover:border-journey-primary/30"
           >
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">

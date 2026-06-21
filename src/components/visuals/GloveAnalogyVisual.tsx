@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 export default function GloveAnalogyVisual({ showResult }: { showResult: boolean }) {
   return (
-    <div className="bg-white rounded-xl p-6 border border-journey-border">
+    <div className="bg-journey-card rounded-xl p-6 border border-journey-border">
       <h3 className="font-bold text-journey-text mb-4 tracking-wide text-sm uppercase">The Glove Analogy</h3>
 
       <div className="grid grid-cols-3 gap-4 items-center">

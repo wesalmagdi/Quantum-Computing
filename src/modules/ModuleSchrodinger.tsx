@@ -64,7 +64,7 @@ export default function ModuleSchrodinger() {
         ]}
       />
 
-      <div className="bg-white rounded-xl p-6 border border-journey-border">
+      <div className="bg-journey-card rounded-xl p-6 border border-journey-border">
         <div className="text-center mb-6">
           <div className="inline-block bg-journey-border/30 rounded-lg px-6 py-4 border border-journey-border">
             <span className="text-xl md:text-2xl font-serif italic text-journey-text">{'i\u210F'}</span>
@@ -178,7 +178,7 @@ export default function ModuleSchrodinger() {
         </div>
       </div>
 
-      <div className="bg-white/50 rounded-xl p-5 border border-journey-border">
+      <div className="bg-journey-card/50 rounded-xl p-5 border border-journey-border">
         <p className="text-sm text-journey-muted text-center leading-relaxed">
           The wavefunction <span className="font-serif text-journey-text">psi</span> encodes
           <strong className="text-journey-text"> everything</strong> knowable about a quantum system.

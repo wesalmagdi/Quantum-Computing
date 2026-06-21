@@ -34,7 +34,7 @@ export default function MeetingDetail({ meeting, onBack, onDeleted }: {
         <span>{'\u2190'}</span> Back to meetings
       </button>
 
-      <div className="bg-white rounded-xl border border-journey-border overflow-hidden shadow-sm">
+      <div className="bg-journey-card rounded-xl border border-journey-border overflow-hidden shadow-sm">
         <div className="p-6 border-b border-journey-border-light">
           <div className="flex items-start justify-between gap-4">
             <div>

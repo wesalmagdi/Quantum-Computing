@@ -93,7 +93,7 @@ export default function ModuleInterference() {
 
       <DoubleSlitVisual />
 
-      <div className="bg-white rounded-xl p-6 border border-journey-border">
+      <div className="bg-journey-card rounded-xl p-6 border border-journey-border">
         <h3 className="font-bold text-journey-text mb-5 text-sm uppercase tracking-wide">Interference Sandbox</h3>
 
         <div className="bg-journey-surface rounded-lg p-4 border border-journey-border mb-5">
@@ -171,7 +171,7 @@ export default function ModuleInterference() {
         </div>
       </div>
 
-      <div className="bg-white/50 rounded-xl p-5 border border-journey-border">
+      <div className="bg-journey-card/50 rounded-xl p-5 border border-journey-border">
         <p className="text-sm text-journey-muted text-center leading-relaxed">
           When waves are <strong className="text-green-400">in phase</strong> (difference = 0&deg;),
           they add up to full intensity. When <strong className="text-red-400">opposite</strong> (180&deg;),

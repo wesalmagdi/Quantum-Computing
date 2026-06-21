@@ -43,7 +43,7 @@ export default function StudyNotesView() {
       />
 
       <div className={`transition-all duration-300 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-20'}`}>
-        <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-journey-border">
+        <header className="sticky top-0 z-10 bg-journey-card/80 backdrop-blur-md border-b border-journey-border">
           <div className="flex items-center gap-3 px-4 py-3">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}

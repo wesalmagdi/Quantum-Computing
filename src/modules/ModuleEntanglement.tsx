@@ -71,7 +71,7 @@ export default function ModuleEntanglement() {
 
       <GloveAnalogyVisual showResult={measuredA} />
 
-      <div className="bg-white rounded-xl p-6 border border-journey-border">
+      <div className="bg-journey-card rounded-xl p-6 border border-journey-border">
         <h3 className="font-bold text-journey-text mb-5 text-sm uppercase tracking-wide">The Entanglement Simulator</h3>
 
         <div className="grid grid-cols-5 gap-4 items-center mb-6">
@@ -179,7 +179,7 @@ export default function ModuleEntanglement() {
         )}
       </div>
 
-      <div className="bg-white/50 rounded-xl p-5 border border-journey-border">
+      <div className="bg-journey-card/50 rounded-xl p-5 border border-journey-border">
         <p className="text-sm text-journey-muted text-center leading-relaxed">
           Entanglement is not just a curiosity -- it is a
           <strong className="text-journey-text"> computational resource</strong>. Quantum computers use it

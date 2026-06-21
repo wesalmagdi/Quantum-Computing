@@ -28,7 +28,7 @@ export default function Sidebar({ active, onSelect, collapsed, onToggle }: {
         <div className="fixed inset-0 bg-black/20 z-20 lg:hidden" onClick={onToggle} />
       )}
       <aside className={`
-        fixed top-0 left-0 z-30 h-screen bg-white border-r border-journey-border
+        fixed top-0 left-0 z-30 h-screen bg-journey-card border-r border-journey-border
         transition-all duration-300 flex flex-col
         ${collapsed ? '-translate-x-full lg:translate-x-0 lg:w-20' : 'w-64'}
       `}>

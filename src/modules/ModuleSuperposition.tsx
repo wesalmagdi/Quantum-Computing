@@ -67,14 +67,14 @@ export default function ModuleSuperposition() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <div className="lg:col-span-3 bg-white rounded-xl border border-journey-border overflow-hidden">
+        <div className="lg:col-span-3 bg-journey-card rounded-xl border border-journey-border overflow-hidden">
           <div className={collapsed ? 'animate-collapse-glow' : ''}>
             <BlochSphere theta={sphereTheta} phi={phi} />
           </div>
         </div>
 
         <div className="lg:col-span-2 space-y-5">
-          <div className="bg-white rounded-xl p-5 border border-journey-border">
+          <div className="bg-journey-card rounded-xl p-5 border border-journey-border">
             <AmplitudeControls
               theta={theta}
               phi={phi}
@@ -83,13 +83,13 @@ export default function ModuleSuperposition() {
               disabled={collapsed}
             />
           </div>
-          <div className="bg-white rounded-xl p-5 border border-journey-border">
+          <div className="bg-journey-card rounded-xl p-5 border border-journey-border">
             <ProbabilityDisplay theta={theta} />
           </div>
-          <div className="bg-white rounded-xl p-5 border border-journey-border">
+          <div className="bg-journey-card rounded-xl p-5 border border-journey-border">
             <StateDisplay theta={theta} phi={phi} />
           </div>
-          <div className="bg-white rounded-xl p-5 border border-journey-border">
+          <div className="bg-journey-card rounded-xl p-5 border border-journey-border">
             <MeasureButton
               theta={theta}
               collapsed={collapsed}

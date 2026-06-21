@@ -64,7 +64,7 @@ export default function ModulePauliX() {
         ]}
       />
 
-      <div className="bg-white rounded-xl p-6 border border-journey-border">
+      <div className="bg-journey-card rounded-xl p-6 border border-journey-border">
         <div className="bg-journey-surface rounded-lg p-4 border border-journey-border mb-5">
           <p className="text-xs text-journey-muted leading-relaxed">
             <strong className="text-journey-text">Classical vs quantum NOT:</strong> In classical computing,
@@ -76,7 +76,7 @@ export default function ModulePauliX() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-xl p-4 border border-journey-border">
+          <div className="bg-journey-card rounded-xl p-4 border border-journey-border">
             <div className="text-xs text-journey-muted uppercase tracking-wider mb-2">
               Bloch sphere {applied ? `(flip #${flipCount})` : '(initial)'}
             </div>
@@ -84,7 +84,7 @@ export default function ModulePauliX() {
           </div>
 
           <div className="space-y-5">
-            <div className="bg-white rounded-xl p-6 border border-journey-border">
+            <div className="bg-journey-card rounded-xl p-6 border border-journey-border">
               <h3 className="font-bold text-journey-text text-sm uppercase tracking-wide mb-4">Effect</h3>
 
               <div className="font-mono text-sm bg-journey-surface rounded-lg p-4 text-center border border-journey-border mb-5">
@@ -161,7 +161,7 @@ export default function ModulePauliX() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="bg-white rounded-xl p-4 border border-journey-border"
+                className="bg-journey-card rounded-xl p-4 border border-journey-border"
               >
                 <p className="text-sm text-journey-muted leading-relaxed">
                   Flip #{flipCount}: theta went from {((prevTheta * 180 / Math.PI)).toFixed(0)}&deg; to{' '}
@@ -175,7 +175,7 @@ export default function ModulePauliX() {
         </div>
       </div>
 
-      <div className="bg-white/50 rounded-xl p-5 border border-journey-border">
+      <div className="bg-journey-card/50 rounded-xl p-5 border border-journey-border">
         <p className="text-sm text-journey-muted text-center leading-relaxed">
           Pauli-X is the quantum NOT gate: <span className="font-mono text-journey-text">X|0&gt; = |1&gt;</span>.
           But it is also a <strong className="text-journey-text">rotation</strong> -- 180&deg; around the X axis

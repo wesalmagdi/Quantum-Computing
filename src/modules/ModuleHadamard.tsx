@@ -63,7 +63,7 @@ export default function ModuleHadamard() {
         ]}
       />
 
-      <div className="bg-white rounded-xl p-6 border border-journey-border">
+      <div className="bg-journey-card rounded-xl p-6 border border-journey-border">
         <div className="grid md:grid-cols-2 gap-5">
           <div className="bg-journey-surface rounded-lg p-4 border border-journey-border">
             <h4 className="text-xs text-journey-muted font-medium mb-2 tracking-wide">The analogy: a beam splitter</h4>
@@ -86,7 +86,7 @@ export default function ModuleHadamard() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl p-4 border border-journey-border">
+        <div className="bg-journey-card rounded-xl p-4 border border-journey-border">
           <div className="text-xs text-journey-muted uppercase tracking-wider mb-2">
             Bloch sphere {applied ? '(after H gate)' : '(initial state)'}
           </div>
@@ -94,7 +94,7 @@ export default function ModuleHadamard() {
         </div>
 
         <div className="space-y-5">
-          <div className="bg-white rounded-xl p-6 border border-journey-border">
+          <div className="bg-journey-card rounded-xl p-6 border border-journey-border">
             <h3 className="font-bold text-journey-text text-sm uppercase tracking-wide mb-4">Effect</h3>
 
             <div className="font-mono text-sm bg-journey-surface rounded-lg p-4 text-center border border-journey-border mb-5">
@@ -175,7 +175,7 @@ export default function ModuleHadamard() {
         </div>
       </div>
 
-      <div className="bg-white/50 rounded-xl p-5 border border-journey-border">
+      <div className="bg-journey-card/50 rounded-xl p-5 border border-journey-border">
         <p className="text-sm text-journey-muted text-center leading-relaxed">
           Hadamard takes <span className="text-journey-primary">|0&gt;</span> (north pole) and maps it to
           the equator -- an <strong className="text-journey-text">equal superposition</strong> called

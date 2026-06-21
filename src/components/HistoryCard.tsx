@@ -17,7 +17,7 @@ export default function HistoryCard({ items, concept }: { items: HistoryItem[]; 
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="bg-white rounded-xl border border-journey-accent/20 overflow-hidden">
+    <div className="bg-journey-card rounded-xl border border-journey-accent/20 overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between px-5 py-4 hover:bg-journey-surface transition-colors"

@@ -36,7 +36,7 @@ export default function ModuleQubit() {
         ]}
       />
 
-      <div className="bg-white rounded-xl p-6 border border-journey-border">
+      <div className="bg-journey-card rounded-xl p-6 border border-journey-border">
         <div className="text-center mb-6">
           <div className="inline-block bg-journey-border/30 rounded-lg px-6 py-4 font-mono text-sm md:text-base border border-journey-border">
             <span className="text-journey-muted">|psi&gt; = </span>
@@ -85,15 +85,15 @@ export default function ModuleQubit() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-5">
-        <div className="bg-white rounded-xl p-5 border border-journey-border">
+        <div className="bg-journey-card rounded-xl p-5 border border-journey-border">
           <ProbabilityDisplay theta={theta} />
         </div>
-        <div className="bg-white rounded-xl p-5 border border-journey-border">
+        <div className="bg-journey-card rounded-xl p-5 border border-journey-border">
           <StateDisplay theta={theta} phi={phi} />
         </div>
       </div>
 
-      <div className="bg-white rounded-xl p-6 border border-journey-border">
+      <div className="bg-journey-card rounded-xl p-6 border border-journey-border">
         <h3 className="font-bold text-journey-text mb-3 tracking-wide text-sm uppercase">What about the Phase?</h3>
         <p className="text-sm text-journey-muted leading-relaxed">
           The <strong className="text-journey-text">phi (phi) slider</strong> controls the
@@ -113,7 +113,7 @@ export default function ModuleQubit() {
         </div>
       </div>
 
-      <div className="bg-white/50 rounded-xl p-5 border border-journey-border">
+      <div className="bg-journey-card/50 rounded-xl p-5 border border-journey-border">
         <p className="text-sm text-journey-muted text-center leading-relaxed">
           Move the sliders above. Watch how the blend between
           <span className="text-journey-primary"> |0&gt;</span> and
