@@ -1,0 +1,76 @@
+'use client';
+
+import { useState } from 'react';
+import Sidebar from '@/components/Sidebar';
+import ModuleIntro from '@/modules/ModuleIntro';
+import ModuleQubit from '@/modules/ModuleQubit';
+import ModuleSuperposition from '@/modules/ModuleSuperposition';
+import ModuleMeasurement from '@/modules/ModuleMeasurement';
+import ModuleEntanglement from '@/modules/ModuleEntanglement';
+import ModuleHadamard from '@/modules/ModuleHadamard';
+import ModulePauliX from '@/modules/ModulePauliX';
+import ModuleInterference from '@/modules/ModuleInterference';
+import ModuleSchrodinger from '@/modules/ModuleSchrodinger';
+import ModuleBreak from '@/modules/ModuleBreak';
+import { MODULES } from '@/lib/quantum';
+
+const moduleComponents: Record<string, React.ReactNode> = {
+  intro: <ModuleIntro />,
+  qubit: <ModuleQubit />,
+  superposition: <ModuleSuperposition />,
+  measurement: <ModuleMeasurement />,
+  entanglement: <ModuleEntanglement />,
+  hadamard: <ModuleHadamard />,
+  paulix: <ModulePauliX />,
+  interference: <ModuleInterference />,
+  schrodinger: <ModuleSchrodinger />,
+  break: <ModuleBreak />,
+};
+
+export default function StudyNotesView() {
+  const [activeModule, setActiveModule] = useState('intro');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const currentModule = MODULES.find(m => m.id === activeModule) || MODULES[0];
+
+  return (
+    <div className="min-h-screen bg-journey-bg">
+      <Sidebar
+        active={activeModule}
+        onSelect={setActiveModule}
+        collapsed={!sidebarOpen}
+        onToggle={() => setSidebarOpen(!sidebarOpen)}
+      />
+
+      <div className={`transition-all duration-300 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-20'}`}>
+        <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-journey-border">
+          <div className="flex items-center gap-3 px-4 py-3">
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="lg:hidden p-2 -ml-2 text-journey-muted hover:text-journey-text"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            </button>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-lg text-journey-primary">{'\u25C8'}</span>
+              <span className="font-medium text-journey-text">{currentModule.label}</span>
+            </div>
+            <span className="text-[10px] text-journey-muted ml-auto">
+              {MODULES.findIndex(m => m.id === activeModule) + 1} / {MODULES.length}
+            </span>
+          </div>
+        </header>
+
+        <main className="p-4 md:p-6 lg:p-8">
+          {moduleComponents[activeModule] || <ModuleIntro />}
+        </main>
+
+        <footer className="text-center text-xs text-journey-muted py-6 border-t border-journey-border mt-12">
+          Our Grad Project Journey · Built with Next.js · Three.js · Framer Motion
+        </footer>
+      </div>
+    </div>
+  );
+}

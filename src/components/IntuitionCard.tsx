@@ -44,13 +44,13 @@ export default function IntuitionCard({
   const s = steps[step];
 
   return (
-    <div className="bg-quantum-card rounded-xl p-6 border border-gray-800/60">
+    <div className="bg-white rounded-xl p-6 border border-journey-border">
       <div className="flex items-center gap-2 mb-5">
         {steps.map((_, i) => (
           <div
             key={i}
             className={`h-1.5 rounded-full transition-all duration-300 ${
-              i === step ? 'w-10 bg-quantum-purple' : i < step ? 'w-4 bg-purple-800/50' : 'w-4 bg-gray-800'
+              i === step ? 'w-10 bg-journey-primary' : i < step ? 'w-4 bg-journey-primary/50' : 'w-4 bg-journey-surface'
             }`}
           />
         ))}
@@ -64,30 +64,30 @@ export default function IntuitionCard({
           exit={{ opacity: 0, y: -12 }}
           transition={{ duration: 0.3 }}
         >
-          <h3 className="text-xl font-bold text-white mb-2">{s.title}</h3>
-          <p className="text-gray-400 leading-relaxed text-sm">{s.text}</p>
+          <h3 className="text-xl font-bold text-journey-text mb-2">{s.title}</h3>
+          <p className="text-journey-muted leading-relaxed text-sm">{s.text}</p>
           {s.highlight && (
-            <p className="text-quantum-cyan text-xs mt-3 font-medium tracking-wide">{s.highlight}</p>
+            <p className="text-journey-primary text-xs mt-3 font-medium tracking-wide">{s.highlight}</p>
           )}
         </motion.div>
       </AnimatePresence>
 
-      <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-800/50">
-        <span className="text-xs text-gray-600">
+      <div className="flex justify-between items-center mt-6 pt-4 border-t border-journey-border">
+        <span className="text-xs text-journey-muted">
           Step {step + 1} of {total}
         </span>
         <div className="flex gap-3">
           <button
             onClick={onPrev}
             disabled={step === 0}
-            className="px-4 py-1.5 text-sm text-gray-500 disabled:opacity-20 hover:text-white transition-colors"
+            className="px-4 py-1.5 text-sm text-journey-muted disabled:opacity-20 hover:text-journey-text transition-colors"
           >
             ← Back
           </button>
           <button
             onClick={onNext}
             disabled={step === total - 1}
-            className="px-5 py-1.5 text-sm bg-quantum-purple text-white rounded-lg hover:bg-purple-600 disabled:opacity-20 transition-colors"
+            className="px-5 py-1.5 text-sm bg-journey-primary text-white rounded-lg hover:bg-journey-primary-dark disabled:opacity-20 transition-colors"
           >
             Next →
           </button>

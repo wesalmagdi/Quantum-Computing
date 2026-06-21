@@ -1,0 +1,28 @@
+[
+  {
+    "id": "1",
+    "title": "Initial Brainstorming Session",
+    "date": "2026-02-15",
+    "discussed": "We discussed potential project ideas and settled on building an interactive quantum computing learning platform. The main goal is to make quantum concepts intuitive through visualizations and hands-on modules.",
+    "actionItems": [
+      { "text": "Research existing quantum learning platforms", "done": true },
+      { "text": "Set up Next.js project with Three.js", "done": true },
+      { "text": "Draft initial module list (intro, qubit, superposition, etc.)", "done": true },
+      { "text": "Create wireframes for the main layout", "done": true }
+    ],
+    "attachments": []
+  },
+  {
+    "id": "2",
+    "title": "Module Design & Content Planning",
+    "date": "2026-02-28",
+    "discussed": "Reviewed the first draft of all quantum modules. Decided on the interactive approach: each module should have a video explanation, an interactive 3D visualization, and a quiz. We assigned topics to team members.",
+    "actionItems": [
+      { "text": "Finalize Bloch sphere visualization component", "done": true },
+      { "text": "Write quiz questions for all modules", "done": true },
+      { "text": "Find and embed relevant YouTube videos for each topic", "done": true },
+      { "text": "Design the sidebar navigation with progress tracking", "done": true }
+    ],
+    "attachments": []
+  }
+]

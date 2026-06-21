@@ -1,0 +1,30 @@
+[
+  {
+    "id": "1",
+    "date": "2026-02-01",
+    "title": "Project Kickoff",
+    "description": "Started our graduation project journey. Formed the team and began brainstorming ideas.",
+    "type": "milestone"
+  },
+  {
+    "id": "2",
+    "date": "2026-02-15",
+    "title": "First Meeting",
+    "description": "First official meeting — settled on Quantum Learning Platform concept.",
+    "type": "meeting"
+  },
+  {
+    "id": "3",
+    "date": "2026-02-28",
+    "title": "Module Planning Complete",
+    "description": "Finalized all 10 quantum modules and content structure.",
+    "type": "milestone"
+  },
+  {
+    "id": "4",
+    "date": "2026-03-10",
+    "title": "Core Development Starts",
+    "description": "Began implementing the Bloch sphere, sidebar, and first modules.",
+    "type": "milestone"
+  }
+]

@@ -7,8 +7,8 @@ export default function BitVsQubitVisual({ bitValue, qubitBlend, onBitToggle, on
 ) {
   return (
     <div className="grid md:grid-cols-2 gap-8">
-      <div className="bg-quantum-card rounded-xl p-6 border border-gray-800/60">
-        <h3 className="font-bold text-white mb-4 tracking-wide">Classical Bit</h3>
+      <div className="bg-white rounded-xl p-6 border border-journey-border">
+        <h3 className="font-bold text-journey-text mb-4 tracking-wide">Classical Bit</h3>
         <div className="flex flex-col items-center gap-4">
           <svg width="80" height="140" viewBox="0 0 80 140" className="mb-2">
             <rect x="25" y="0" width="30" height="20" rx="3" fill="#333" />
@@ -32,19 +32,19 @@ export default function BitVsQubitVisual({ bitValue, qubitBlend, onBitToggle, on
           </svg>
           <button
             onClick={onBitToggle}
-            className="px-5 py-2 rounded-lg text-sm font-bold bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700 transition-all"
+            className="px-5 py-2 rounded-lg text-sm font-bold bg-journey-surface text-journey-text hover:bg-journey-surface border border-journey-border transition-all"
           >
             Toggle ({bitValue})
           </button>
         </div>
       </div>
 
-      <div className="bg-quantum-card rounded-xl p-6 border border-gray-800/60">
-        <h3 className="font-bold text-white mb-4 tracking-wide">Quantum Bit</h3>
+      <div className="bg-white rounded-xl p-6 border border-journey-border">
+        <h3 className="font-bold text-journey-text mb-4 tracking-wide">Quantum Bit</h3>
         <div className="flex flex-col items-center gap-4">
           <div className="relative w-24 h-24">
             <motion.div
-              className="absolute inset-0 rounded-full border-2 border-gray-600"
+              className="absolute inset-0 rounded-full border-2 border-journey-border"
               animate={{ rotate: 360 }}
               transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
             />
@@ -60,8 +60,8 @@ export default function BitVsQubitVisual({ bitValue, qubitBlend, onBitToggle, on
               }}
               transition={{ type: 'spring', stiffness: 100 }}
             />
-            <div className="absolute inset-4 rounded-full bg-quantum-card flex items-center justify-center">
-              <span className="text-xs font-mono text-gray-400">
+            <div className="absolute inset-4 rounded-full bg-white flex items-center justify-center">
+              <span className="text-xs font-mono text-journey-muted">
                 {(qubitBlend * 100).toFixed(0)}% |1⟩
               </span>
             </div>
@@ -73,10 +73,10 @@ export default function BitVsQubitVisual({ bitValue, qubitBlend, onBitToggle, on
             onChange={(e) => onBlendChange(+e.target.value)}
             className="w-full max-w-[200px]"
           />
-          <div className="flex justify-between w-full max-w-[200px] text-[10px] text-gray-600">
-            <span className="text-quantum-cyan/60">|0⟩</span>
-            <span className="text-gray-600">blend</span>
-            <span className="text-quantum-magenta/60">|1⟩</span>
+          <div className="flex justify-between w-full max-w-[200px] text-[10px] text-journey-muted">
+            <span className="text-journey-primary/60">|0⟩</span>
+            <span className="text-journey-muted">blend</span>
+            <span className="text-journey-accent/60">|1⟩</span>
           </div>
         </div>
       </div>

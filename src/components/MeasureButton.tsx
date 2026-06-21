@@ -37,8 +37,8 @@ export default function MeasureButton({ theta, collapsed, collapsedValue, onMeas
         className={`
           w-full py-3 px-6 rounded-xl font-bold text-base transition-all duration-200
           ${collapsed
-            ? 'bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700'
-            : 'bg-quantum-purple text-white hover:bg-purple-600 shadow-lg shadow-purple-500/20 active:scale-[0.98]'
+            ? 'bg-journey-surface text-journey-text hover:bg-journey-surface border border-journey-border'
+            : 'bg-journey-primary text-white hover:bg-journey-primary-dark shadow-lg shadow-indigo-200 active:scale-[0.98]'
           }
           disabled:opacity-60 disabled:cursor-not-allowed
         `}
@@ -62,11 +62,11 @@ export default function MeasureButton({ theta, collapsed, collapsedValue, onMeas
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-          className="text-center py-4 rounded-xl bg-black/30 border border-gray-800"
+          className="text-center py-4 rounded-xl bg-journey-surface border border-journey-border"
         >
-          <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Collapsed to</div>
+          <div className="text-xs text-journey-muted uppercase tracking-wider mb-1">Collapsed to</div>
           <div
-            className={`text-4xl font-bold ${collapsedValue === 0 ? 'text-quantum-cyan' : 'text-quantum-magenta'}`}
+            className={`text-4xl font-bold ${collapsedValue === 0 ? 'text-journey-primary' : 'text-journey-accent'}`}
           >
             |{collapsedValue}⟩
           </div>

@@ -11,17 +11,17 @@ export default function VideoPlayer({ videoId, title, description }: {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="bg-quantum-card rounded-xl border border-gray-800/60 overflow-hidden">
+    <div className="bg-white rounded-xl border border-journey-border overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-3 p-4 hover:bg-gray-800/30 transition-colors text-left"
+        className="w-full flex items-center gap-3 p-4 hover:bg-journey-surface transition-colors text-left"
       >
         <span className="text-lg">▶️</span>
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-medium text-white truncate">{title}</div>
-          <div className="text-xs text-gray-500 truncate">{description}</div>
+          <div className="text-sm font-medium text-journey-text truncate">{title}</div>
+          <div className="text-xs text-journey-muted truncate">{description}</div>
         </div>
-        <span className={`text-gray-600 text-sm transition-transform ${open ? 'rotate-180' : ''}`}>▾</span>
+        <span className={`text-journey-muted text-sm transition-transform ${open ? 'rotate-180' : ''}`}>▾</span>
       </button>
 
       <AnimatePresence>

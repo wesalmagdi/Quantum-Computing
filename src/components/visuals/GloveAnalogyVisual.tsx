@@ -4,13 +4,13 @@ import { motion } from 'framer-motion';
 
 export default function GloveAnalogyVisual({ showResult }: { showResult: boolean }) {
   return (
-    <div className="bg-quantum-card rounded-xl p-6 border border-gray-800/60">
-      <h3 className="font-bold text-white mb-4 tracking-wide text-sm uppercase">The Glove Analogy</h3>
+    <div className="bg-white rounded-xl p-6 border border-journey-border">
+      <h3 className="font-bold text-journey-text mb-4 tracking-wide text-sm uppercase">The Glove Analogy</h3>
 
       <div className="grid grid-cols-3 gap-4 items-center">
         <div className="text-center">
           <motion.div
-            className="w-20 h-24 mx-auto rounded-lg border-2 border-quantum-purple/40 bg-black/40 flex flex-col items-center justify-center gap-2"
+            className="w-20 h-24 mx-auto rounded-lg border-2 border-journey-primary/40 bg-journey-border/30 flex flex-col items-center justify-center gap-2"
             animate={showResult ? { borderColor: '#00d4ff' } : {}}
           >
             <svg width="36" height="36" viewBox="0 0 36 36">
@@ -20,13 +20,13 @@ export default function GloveAnalogyVisual({ showResult }: { showResult: boolean
                 {showResult ? 'L' : '?'}
               </text>
             </svg>
-            <span className="text-[10px] text-gray-500">New York box</span>
+            <span className="text-[10px] text-journey-muted">New York box</span>
           </motion.div>
           {showResult && (
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              className="text-[10px] text-quantum-cyan mt-1 font-bold"
+              className="text-[10px] text-journey-primary mt-1 font-bold"
             >
               LEFT glove!
             </motion.div>
@@ -34,7 +34,7 @@ export default function GloveAnalogyVisual({ showResult }: { showResult: boolean
         </div>
 
         <div className="flex flex-col items-center">
-          <div className="w-px h-8 bg-gray-700" />
+          <div className="w-px h-8 bg-journey-surface" />
           <motion.div
             animate={showResult ? { scale: [1, 1.2, 1] } : {}}
             transition={{ repeat: showResult ? 3 : 0, duration: 0.4 }}
@@ -47,13 +47,13 @@ export default function GloveAnalogyVisual({ showResult }: { showResult: boolean
               <text x="20" y="36" textAnchor="middle" fill="#7c3aed" fontSize="7">random</text>
             </svg>
           </motion.div>
-          <span className="text-[10px] text-gray-600 mt-1">randomized</span>
-          <div className="w-px h-8 bg-gray-700" />
+          <span className="text-[10px] text-journey-muted mt-1">randomized</span>
+          <div className="w-px h-8 bg-journey-surface" />
         </div>
 
         <div className="text-center">
           <motion.div
-            className="w-20 h-24 mx-auto rounded-lg border-2 border-quantum-purple/40 bg-black/40 flex flex-col items-center justify-center gap-2"
+            className="w-20 h-24 mx-auto rounded-lg border-2 border-journey-primary/40 bg-journey-border/30 flex flex-col items-center justify-center gap-2"
             animate={showResult ? { borderColor: '#ff00aa' } : {}}
           >
             <svg width="36" height="36" viewBox="0 0 36 36">
@@ -63,13 +63,13 @@ export default function GloveAnalogyVisual({ showResult }: { showResult: boolean
                 {showResult ? 'R' : '?'}
               </text>
             </svg>
-            <span className="text-[10px] text-gray-500">Tokyo box</span>
+            <span className="text-[10px] text-journey-muted">Tokyo box</span>
           </motion.div>
           {showResult && (
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              className="text-[10px] text-quantum-magenta mt-1 font-bold"
+              className="text-[10px] text-journey-accent mt-1 font-bold"
             >
               RIGHT glove!
             </motion.div>
@@ -77,12 +77,12 @@ export default function GloveAnalogyVisual({ showResult }: { showResult: boolean
         </div>
       </div>
 
-      <div className="mt-4 bg-black/30 rounded-lg p-3 border border-gray-800/40">
-        <p className="text-xs text-gray-500 leading-relaxed">
-          <strong className="text-gray-300">Why entanglement is weirder:</strong> With gloves, each box always contained
+      <div className="mt-4 bg-journey-surface rounded-lg p-3 border border-journey-border">
+        <p className="text-xs text-journey-muted leading-relaxed">
+          <strong className="text-journey-text">Why entanglement is weirder:</strong> With gloves, each box always contained
           a specific glove from the start. With entangled qubits, neither qubit has a definite state until measured —
           they only exist as a shared "cloud" of possibilities. The measurement itself creates the outcome, and both
-          qubits "agree" instantly across any distance. This was proven by <strong className="text-gray-300">Bell's theorem</strong> (1964),
+          qubits "agree" instantly across any distance. This was proven by <strong className="text-journey-text">Bell's theorem</strong> (1964),
           which showed no "hidden variables" can explain quantum correlations.
         </p>
       </div>

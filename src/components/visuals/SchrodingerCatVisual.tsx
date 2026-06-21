@@ -13,7 +13,7 @@ export default function SchrodingerCatVisual({ showStory }: { showStory: boolean
         <h3 className="font-bold text-amber-200/80 tracking-wide text-sm uppercase">Schrodinger's Cat — The Experiment</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-          <div className="md:col-span-1 bg-black/30 rounded-lg p-4 border border-amber-900/30 text-center">
+          <div className="md:col-span-1 bg-journey-surface rounded-lg p-4 border border-journey-accent/20 text-center">
             <svg width="80" height="80" viewBox="0 0 80 80" className="mx-auto mb-2">
               <ellipse cx="40" cy="45" rx="25" ry="20" fill="#444" />
               <circle cx="40" cy="30" r="14" fill="#555" />
@@ -32,7 +32,7 @@ export default function SchrodingerCatVisual({ showStory }: { showStory: boolean
             </div>
           </div>
 
-          <div className="md:col-span-1 bg-black/30 rounded-lg p-4 border border-amber-900/30 text-center">
+          <div className="md:col-span-1 bg-journey-surface rounded-lg p-4 border border-journey-accent/20 text-center">
             <svg width="80" height="80" viewBox="0 0 80 80" className="mx-auto mb-2">
               <circle cx="40" cy="40" r="18" fill="none" stroke="#666" strokeWidth="2" strokeDasharray="4 3" />
               <text x="40" y="44" textAnchor="middle" fill="#888" fontSize="22" fontFamily="serif">?</text>
@@ -50,7 +50,7 @@ export default function SchrodingerCatVisual({ showStory }: { showStory: boolean
             </div>
           </div>
 
-          <div className="md:col-span-1 bg-black/30 rounded-lg p-4 border border-amber-900/30 text-center">
+          <div className="md:col-span-1 bg-journey-surface rounded-lg p-4 border border-journey-accent/20 text-center">
             <svg width="80" height="80" viewBox="0 0 80 80" className="mx-auto mb-2">
               <ellipse cx="40" cy="45" rx="25" ry="20" fill="#3a2a2a" />
               <circle cx="40" cy="30" r="14" fill="#4a3a3a" />
@@ -75,7 +75,7 @@ export default function SchrodingerCatVisual({ showStory }: { showStory: boolean
             </div>
           </div>
 
-          <div className="md:col-span-1 bg-black/30 rounded-lg p-4 border border-amber-900/30 text-center">
+          <div className="md:col-span-1 bg-journey-surface rounded-lg p-4 border border-journey-accent/20 text-center">
             <svg width="80" height="80" viewBox="0 0 80 80" className="mx-auto mb-2">
               <rect x="10" y="20" width="60" height="40" rx="4" fill="#333" stroke="#555" strokeWidth="1" />
               <circle cx="60" cy="40" r="8" fill="none" stroke="#666" strokeWidth="2" />
@@ -94,7 +94,7 @@ export default function SchrodingerCatVisual({ showStory }: { showStory: boolean
             </div>
           </div>
 
-          <div className="md:col-span-1 bg-black/30 rounded-lg p-4 border border-amber-900/30 text-center">
+          <div className="md:col-span-1 bg-journey-surface rounded-lg p-4 border border-journey-accent/20 text-center">
             <svg width="80" height="80" viewBox="0 0 80 80" className="mx-auto mb-2">
               <motion.ellipse
                 cx="40" cy="45" rx="25" ry="20"
@@ -118,7 +118,7 @@ export default function SchrodingerCatVisual({ showStory }: { showStory: boolean
           </div>
         </div>
 
-        <div className="bg-black/30 rounded-lg p-4 border border-amber-900/30">
+        <div className="bg-journey-surface rounded-lg p-4 border border-journey-accent/20">
           <p className="text-xs text-amber-200/60 leading-relaxed">
             <strong className="text-amber-200/80">The punchline:</strong> Schrodinger proposed this in 1935 to show that
             the Copenhagen interpretation leads to absurdity if taken literally — a cat cannot be both alive and dead.

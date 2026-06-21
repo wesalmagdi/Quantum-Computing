@@ -41,14 +41,14 @@ export default function ModuleQuiz({ questions }: { questions: QuizQuestion[] })
 
   if (finished) {
     return (
-      <div className="bg-quantum-card rounded-xl p-6 border border-gray-800/60 text-center">
+      <div className="bg-white rounded-xl p-6 border border-journey-border text-center">
         <div className="text-3xl mb-3">{score === total ? '🎉' : score >= total / 2 ? '👍' : '💪'}</div>
-        <h3 className="text-lg font-bold text-white mb-1">Quiz Complete!</h3>
-        <p className="text-3xl font-bold text-quantum-purple mb-2">{score}/{total}</p>
-        <p className="text-sm text-gray-500 mb-4">
+        <h3 className="text-lg font-bold text-journey-text mb-1">Quiz Complete!</h3>
+        <p className="text-3xl font-bold text-journey-primary mb-2">{score}/{total}</p>
+        <p className="text-sm text-journey-muted mb-4">
           {score === total ? 'Perfect! You really know your stuff.' : score >= total / 2 ? 'Great job! Keep practicing.' : 'Keep exploring the module and try again.'}
         </p>
-        <button onClick={handleReset} className="px-6 py-2 text-sm bg-quantum-purple text-white rounded-lg hover:bg-purple-600 transition-colors">
+        <button onClick={handleReset} className="px-6 py-2 text-sm bg-journey-primary text-white rounded-lg hover:bg-journey-primary-dark transition-colors">
           🔄 Retry quiz
         </button>
       </div>
@@ -56,16 +56,16 @@ export default function ModuleQuiz({ questions }: { questions: QuizQuestion[] })
   }
 
   return (
-    <div className="bg-quantum-card rounded-xl border border-gray-800/60 overflow-hidden">
+    <div className="bg-white rounded-xl border border-journey-border overflow-hidden">
       <div className="p-5">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Quiz</h3>
-          <span className="text-xs text-gray-600">Question {current + 1} of {total}</span>
+          <h3 className="text-xs font-semibold text-journey-muted uppercase tracking-widest">Quiz</h3>
+          <span className="text-xs text-journey-muted">Question {current + 1} of {total}</span>
         </div>
 
         <div className="flex gap-1.5 mb-5">
           {Array.from({ length: total }).map((_, i) => (
-            <div key={i} className={`h-1 flex-1 rounded-full ${i < current ? 'bg-quantum-purple' : i === current ? 'bg-purple-500/50' : 'bg-gray-800'}`} />
+            <div key={i} className={`h-1 flex-1 rounded-full ${i < current ? 'bg-journey-primary' : i === current ? 'bg-purple-500/50' : 'bg-journey-surface'}`} />
           ))}
         </div>
 
@@ -77,17 +77,17 @@ export default function ModuleQuiz({ questions }: { questions: QuizQuestion[] })
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2 }}
           >
-            <p className="text-sm font-medium text-white mb-4">{q.question}</p>
+            <p className="text-sm font-medium text-journey-text mb-4">{q.question}</p>
 
             <div className="space-y-2 mb-4">
               {q.options.map((opt, idx) => {
-                let style = 'border-gray-800/60 hover:border-gray-600 hover:bg-gray-800/40';
+                let style = 'border-journey-border hover:border-journey-border hover:bg-journey-surface';
                 if (answered) {
                   if (idx === q.correctIndex) style = 'border-green-500/60 bg-green-900/20 text-green-300';
                   else if (idx === selected) style = 'border-red-500/60 bg-red-900/20 text-red-300';
-                  else style = 'border-gray-800/30 opacity-40';
+                  else style = 'border-journey-border opacity-40';
                 } else if (selected === idx) {
-                  style = 'border-quantum-purple bg-purple-900/20';
+                  style = 'border-journey-primary bg-journey-surface';
                 }
 
                 return (
@@ -119,7 +119,7 @@ export default function ModuleQuiz({ questions }: { questions: QuizQuestion[] })
         {answered && (
           <button
             onClick={handleNext}
-            className="w-full py-2.5 text-sm font-medium bg-quantum-purple text-white rounded-lg hover:bg-purple-600 transition-colors"
+            className="w-full py-2.5 text-sm font-medium bg-journey-primary text-white rounded-lg hover:bg-journey-primary-dark transition-colors"
           >
             {current < total - 1 ? 'Next question →' : 'See results'}
           </button>

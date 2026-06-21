@@ -8,8 +8,8 @@ export default function QuantumDiceVisual({ p0, results, onRoll }: {
   onRoll: () => void;
 }) {
   return (
-    <div className="bg-quantum-card rounded-xl p-6 border border-gray-800/60">
-      <h3 className="font-bold text-white mb-4 tracking-wide text-sm uppercase">The Quantum Die</h3>
+    <div className="bg-white rounded-xl p-6 border border-journey-border">
+      <h3 className="font-bold text-journey-text mb-4 tracking-wide text-sm uppercase">The Quantum Die</h3>
 
       <div className="grid grid-cols-2 gap-6 items-center mb-4">
         <div className="flex flex-col items-center">
@@ -52,9 +52,9 @@ export default function QuantumDiceVisual({ p0, results, onRoll }: {
         </div>
 
         <div className="space-y-3">
-          <div className="bg-black/30 rounded-lg p-3 border border-gray-800/40">
-            <div className="text-[10px] text-gray-500 mb-1">How it works</div>
-            <p className="text-xs text-gray-400 leading-relaxed">
+          <div className="bg-journey-surface rounded-lg p-3 border border-journey-border">
+            <div className="text-[10px] text-journey-muted mb-1">How it works</div>
+            <p className="text-xs text-journey-muted leading-relaxed">
               A classical die has equal chance for each face. A quantum die is loaded — the probabilities
               are set by the amplitudes. Each roll is random, but the distribution matches the quantum
               prediction. The more you roll, the clearer the pattern becomes.
@@ -67,26 +67,26 @@ export default function QuantumDiceVisual({ p0, results, onRoll }: {
               animate={{ opacity: 1 }}
               className="space-y-2"
             >
-              <div className="flex justify-between text-[10px] text-gray-500">
+              <div className="flex justify-between text-[10px] text-journey-muted">
                 <span>|0⟩: {results.zeros} rolls</span>
                 <span>|1⟩: {results.ones} rolls</span>
               </div>
-              <div className="flex h-3 rounded-full overflow-hidden bg-gray-800 relative">
+              <div className="flex h-3 rounded-full overflow-hidden bg-journey-surface relative">
                 <motion.div
-                  className="bg-quantum-cyan"
+                  className="bg-journey-primary"
                   initial={{ width: 0 }}
                   animate={{ width: `${(results.zeros / (results.zeros + results.ones)) * 100}%` }}
                   transition={{ duration: 0.5 }}
                 />
                 <motion.div
-                  className="bg-quantum-magenta"
+                  className="bg-journey-accent"
                   initial={{ width: 0 }}
                   animate={{ width: `${(results.ones / (results.zeros + results.ones)) * 100}%` }}
                   transition={{ duration: 0.5 }}
                 />
                 <div className="absolute top-0 bottom-0 w-0.5 bg-white/50" style={{ left: `${p0 * 100}%` }} />
               </div>
-              <div className="text-[10px] text-gray-600 text-right">
+              <div className="text-[10px] text-journey-muted text-right">
                 expected (|) vs observed
               </div>
             </motion.div>
@@ -94,7 +94,7 @@ export default function QuantumDiceVisual({ p0, results, onRoll }: {
 
           <button
             onClick={onRoll}
-            className="w-full py-2 rounded-lg text-sm font-medium bg-quantum-purple text-white hover:bg-purple-600 transition-colors"
+            className="w-full py-2 rounded-lg text-sm font-medium bg-journey-primary text-white hover:bg-journey-primary-dark transition-colors"
           >
             Roll the quantum die
           </button>

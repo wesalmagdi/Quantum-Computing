@@ -6,8 +6,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Understanding Superposition — Quantum Learning",
-  description: "Interactive quantum learning — build intuition for superposition",
+  title: "Our Grad Project Journey",
+  description: "Documenting our graduation project — meetings, study notes, and everything in between.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -2,8 +2,8 @@
 
 export default function DoubleSlitVisual() {
   return (
-    <div className="bg-quantum-card rounded-xl p-6 border border-gray-800/60">
-      <h3 className="font-bold text-white mb-4 tracking-wide text-sm uppercase">The Double-Slit Experiment</h3>
+    <div className="bg-white rounded-xl p-6 border border-journey-border">
+      <h3 className="font-bold text-journey-text mb-4 tracking-wide text-sm uppercase">The Double-Slit Experiment</h3>
 
       <svg width="100%" height="160" viewBox="0 0 600 160" className="w-full mb-4">
         <rect x="0" y="40" width="600" height="80" fill="#0a0a1a" rx="4" />
@@ -47,12 +47,12 @@ export default function DoubleSlitVisual() {
         <text x="540" y="20" textAnchor="middle" fill="#555" fontSize="9" fontFamily="monospace">screen</text>
       </svg>
 
-      <div className="bg-black/30 rounded-lg p-3 border border-gray-800/40">
-        <p className="text-xs text-gray-500 leading-relaxed">
+      <div className="bg-journey-surface rounded-lg p-3 border border-journey-border">
+        <p className="text-xs text-journey-muted leading-relaxed">
           A source emits waves that pass through two slits. Each slit acts as a new wave source. Where the
-          waves meet <strong className="text-gray-300">in phase</strong> (both at peak), they create a bright band.
+          waves meet <strong className="text-journey-text">in phase</strong> (both at peak), they create a bright band.
           Where a peak meets a trough, they cancel to darkness. The result is an{' '}
-          <strong className="text-gray-300">interference pattern</strong> on the screen — alternating bright and
+          <strong className="text-journey-text">interference pattern</strong> on the screen — alternating bright and
           dark bands. Quantum algorithms orchestrate exactly this effect with probability amplitudes to amplify
           correct answers and cancel incorrect ones.
         </p>

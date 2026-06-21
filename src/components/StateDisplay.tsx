@@ -12,14 +12,14 @@ export default function StateDisplay({ theta, phi }: { theta: number; phi: numbe
 
   return (
     <div className="space-y-2">
-      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-widest">State vector</h3>
-      <div className="font-mono text-base bg-black/30 rounded-lg p-3 text-center border border-gray-800/50">
-        <span className="text-gray-500">|ψ⟩ = </span>
-        <span className="text-quantum-cyan">{alpha.toFixed(3)}</span>
-        <span className="text-gray-400"> |0⟩ </span>
-        <span className="text-gray-500">{betaSign} </span>
-        <span className="text-quantum-magenta">{betaAbs}{imagSign}{imagAbs}i</span>
-        <span className="text-gray-400"> |1⟩</span>
+      <h3 className="text-xs font-semibold text-journey-muted uppercase tracking-widest">State vector</h3>
+      <div className="font-mono text-base bg-journey-surface rounded-lg p-3 text-center border border-journey-border">
+        <span className="text-journey-muted">|ψ⟩ = </span>
+        <span className="text-journey-primary">{alpha.toFixed(3)}</span>
+        <span className="text-journey-muted"> |0⟩ </span>
+        <span className="text-journey-muted">{betaSign} </span>
+        <span className="text-journey-accent">{betaAbs}{imagSign}{imagAbs}i</span>
+        <span className="text-journey-muted"> |1⟩</span>
       </div>
     </div>
   );

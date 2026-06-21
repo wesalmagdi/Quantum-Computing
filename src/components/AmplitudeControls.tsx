@@ -16,8 +16,8 @@ export default function AmplitudeControls({ theta, phi, onThetaChange, onPhiChan
     <div className="space-y-6">
       <div>
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-quantum-cyan">|0⟩ vs |1⟩ blend</span>
-          <span className="text-xs text-gray-500">
+          <span className="text-sm font-medium text-journey-primary">|0⟩ vs |1⟩ blend</span>
+          <span className="text-xs text-journey-muted">
             {p0}% / {p1}%
           </span>
         </div>
@@ -31,17 +31,17 @@ export default function AmplitudeControls({ theta, phi, onThetaChange, onPhiChan
           disabled={disabled}
           className="w-full"
         />
-        <div className="flex justify-between text-xs text-gray-600 mt-1">
-          <span className="text-quantum-cyan/60">Pure |0⟩</span>
-          <span className="text-gray-600">Equal</span>
-          <span className="text-quantum-magenta/60">Pure |1⟩</span>
+        <div className="flex justify-between text-xs text-journey-muted mt-1">
+          <span className="text-journey-primary/60">Pure |0⟩</span>
+          <span className="text-journey-muted">Equal</span>
+          <span className="text-journey-accent/60">Pure |1⟩</span>
         </div>
       </div>
 
       <div>
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-gray-300">Relative phase (φ)</span>
-          <span className="text-xs text-gray-500">{phi.toFixed(2)} rad</span>
+          <span className="text-sm font-medium text-journey-text">Relative phase (φ)</span>
+          <span className="text-xs text-journey-muted">{phi.toFixed(2)} rad</span>
         </div>
         <input
           type="range"

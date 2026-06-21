@@ -48,13 +48,13 @@ export default function ModuleSuperposition() {
   return (
     <div key={collapseKey} className="space-y-10 max-w-6xl mx-auto">
       <div>
-        <h2 className="text-3xl font-bold text-white mb-3 tracking-tight">Superposition</h2>
-        <p className="text-gray-400 text-sm leading-relaxed max-w-2xl">
+        <h2 className="text-3xl font-bold text-journey-text mb-3 tracking-tight">Superposition</h2>
+        <p className="text-journey-muted text-sm leading-relaxed max-w-2xl">
           Superposition is the quantum ability to be in
-          <strong className="text-white"> multiple states at once</strong> -- until you measure.
+          <strong className="text-journey-text"> multiple states at once</strong> -- until you measure.
           The Bloch sphere is your map: every possible superposition is a point on its surface.
-          North pole is <span className="text-quantum-cyan">|0&gt;</span>, south pole is
-          <span className="text-quantum-magenta"> |1&gt;</span>, and everything in between is a unique blend.
+          North pole is <span className="text-journey-primary">|0&gt;</span>, south pole is
+          <span className="text-journey-accent"> |1&gt;</span>, and everything in between is a unique blend.
         </p>
       </div>
 
@@ -67,14 +67,14 @@ export default function ModuleSuperposition() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <div className="lg:col-span-3 bg-quantum-card rounded-xl border border-gray-800/60 overflow-hidden">
+        <div className="lg:col-span-3 bg-white rounded-xl border border-journey-border overflow-hidden">
           <div className={collapsed ? 'animate-collapse-glow' : ''}>
             <BlochSphere theta={sphereTheta} phi={phi} />
           </div>
         </div>
 
         <div className="lg:col-span-2 space-y-5">
-          <div className="bg-quantum-card rounded-xl p-5 border border-gray-800/60">
+          <div className="bg-white rounded-xl p-5 border border-journey-border">
             <AmplitudeControls
               theta={theta}
               phi={phi}
@@ -83,13 +83,13 @@ export default function ModuleSuperposition() {
               disabled={collapsed}
             />
           </div>
-          <div className="bg-quantum-card rounded-xl p-5 border border-gray-800/60">
+          <div className="bg-white rounded-xl p-5 border border-journey-border">
             <ProbabilityDisplay theta={theta} />
           </div>
-          <div className="bg-quantum-card rounded-xl p-5 border border-gray-800/60">
+          <div className="bg-white rounded-xl p-5 border border-journey-border">
             <StateDisplay theta={theta} phi={phi} />
           </div>
-          <div className="bg-quantum-card rounded-xl p-5 border border-gray-800/60">
+          <div className="bg-white rounded-xl p-5 border border-journey-border">
             <MeasureButton
               theta={theta}
               collapsed={collapsed}
