@@ -2,9 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --journey-bg: #f8fafc;
+  --journey-card: #ffffff;
+  --journey-primary: #6366f1;
+  --journey-primary-dark: #4f46e5;
+  --journey-accent: #f59e0b;
+  --journey-accent-light: #fbbf24;
+  --journey-text: #0f172a;
+  --journey-muted: #64748b;
+  --journey-border: #e2e8f0;
+  --journey-border-light: #f1f5f9;
+  --journey-surface: #f1f5f9;
+}
+
+.dark {
+  --journey-bg: #0a0a1a;
+  --journey-card: #141428;
+  --journey-primary: #818cf8;
+  --journey-primary-dark: #6366f1;
+  --journey-accent: #f59e0b;
+  --journey-accent-light: #fbbf24;
+  --journey-text: #e2e8f0;
+  --journey-muted: #64748b;
+  --journey-border: #1e293b;
+  --journey-border-light: #1e293b;
+  --journey-surface: #1e293b;
+}
+
 body {
-  color: #0f172a;
-  background: #f8fafc;
+  color: var(--journey-text);
+  background: var(--journey-bg);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: 15px;
   line-height: 1.8;
@@ -31,7 +59,7 @@ input[type="range"] {
   border-radius: 3px;
   outline: none;
   cursor: pointer;
-  background: #e2e8f0;
+  background: var(--journey-border);
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -40,7 +68,7 @@ input[type="range"]::-webkit-slider-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #6366f1;
+  background: var(--journey-primary);
   cursor: pointer;
   border: 2px solid #a5b4fc;
   box-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
@@ -59,4 +87,22 @@ input[type="range"]:disabled::-webkit-slider-thumb {
 
 input[type="range"]:focus::-webkit-slider-thumb {
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2), 0 0 8px rgba(99, 102, 241, 0.3);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 8px var(--journey-primary); }
+  50% { box-shadow: 0 0 20px var(--journey-primary), 0 0 40px var(--journey-primary); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
 }
