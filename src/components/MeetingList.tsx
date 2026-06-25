@@ -50,6 +50,15 @@ export default function MeetingList() {
 
   const doneTotal = meetings.reduce((s, m) => s + m.actionItems.filter(a => a.done).length, 0);
   const allTotal = meetings.reduce((s, m) => s + m.actionItems.length, 0);
+  const attachTotal = meetings.reduce((s, m) => s + m.attachments.length, 0);
+  const pct = allTotal > 0 ? Math.round((doneTotal / allTotal) * 100) : 0;
+
+  const stats = [
+    { emoji: '📋', label: 'Meetings', value: meetings.length },
+    { emoji: '✅', label: 'Tasks Done', value: `${doneTotal}/${allTotal}` },
+    { emoji: '📎', label: 'Attachments', value: attachTotal },
+    { emoji: '📈', label: 'Completion', value: `${pct}%` },
+  ];
 
   return (
     <div className="max-w-3xl mx-auto p-4 md:p-8">
@@ -77,6 +86,21 @@ export default function MeetingList() {
         >
           + New Meeting
         </motion.button>
+      </motion.div>
+
+      {/* Stats bar */}
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+        className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6"
+      >
+        {stats.map((s, i) => (
+          <motion.div key={s.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + i * 0.06 }}
+            className="bg-journey-card rounded-2xl border border-journey-border p-4 text-center hover:shadow-sm transition-all"
+          >
+            <div className="text-lg mb-1">{s.emoji}</div>
+            <div className="text-lg font-bold text-journey-text">{s.value}</div>
+            <div className="text-[10px] text-journey-muted uppercase tracking-wider">{s.label}</div>
+          </motion.div>
+        ))}
       </motion.div>
 
       {/* Form */}
@@ -137,7 +161,17 @@ export default function MeetingList() {
                       {m.actionItems.filter(a => a.done).length}/{m.actionItems.length} ✓
                     </motion.div>
                     {m.attachments.length > 0 && (
-                      <span className="text-[10px] text-journey-muted">📎 {m.attachments.length}</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-[10px] text-journey-muted">{m.attachments.length} files</span>
+                        <div className="flex -space-x-1">
+                          {m.attachments.slice(0, 3).map((a, ai) => (
+                            <span key={ai} className="text-xs relative" title={a.name}>
+                              {a.url.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i) ? '🖼️' : a.name.match(/\.pdf$/i) ? '📄' : '📎'}
+                            </span>
+                          ))}
+                          {m.attachments.length > 3 && <span className="text-[9px] text-journey-muted ml-1">+{m.attachments.length - 3}</span>}
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
