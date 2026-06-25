@@ -13,6 +13,7 @@ export default function MeetingDetail({ meeting, onBack, onDeleted }: {
   const [attachments, setAttachments] = useState<Attachment[]>(meeting.attachments);
   const [newItemText, setNewItemText] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
   const [deleting, setDeleting] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -41,15 +42,17 @@ export default function MeetingDetail({ meeting, onBack, onDeleted }: {
     const files = e.target.files;
     if (!files) return;
     setUploading(true);
+    setUploadError('');
     const newAttachments: Attachment[] = [...attachments];
     for (const file of Array.from(files)) {
       const formData = new FormData();
       formData.append('file', file);
       try {
         const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (!res.ok) { setUploadError(`Upload failed: ${res.status}`); continue; }
         const data = await res.json();
         newAttachments.push({ url: data.url, name: data.name });
-      } catch {}
+      } catch (err) { setUploadError('Upload failed — check console'); console.error(err); }
     }
     setAttachments(newAttachments);
     await saveField('attachments', newAttachments);
@@ -222,16 +225,19 @@ export default function MeetingDetail({ meeting, onBack, onDeleted }: {
 
               {/* Upload zone */}
               <div className="flex items-center gap-3">
-                <motion.div
-                  whileHover={{ scale: 1.01 }}
-                  onClick={() => fileRef.current?.click()}
-                  className="flex-1 border border-dashed border-journey-border/20 rounded-lg p-3 text-center cursor-pointer hover:border-journey-primary/30 hover:bg-journey-surface/10 transition-all group"
-                >
-                  <input ref={fileRef} type="file" multiple onChange={handleUpload} className="hidden" />
-                  <div className="text-[10px] font-mono text-journey-muted/40 group-hover:text-journey-muted/60 transition-colors">
-                    {uploading ? 'uploading...' : '+ attach files to this session'}
-                  </div>
-                </motion.div>
+                <div className="flex-1">
+                  {uploadError && <div className="text-[9px] font-mono text-rose-400/70 mb-1.5">{uploadError}</div>}
+                  <motion.div
+                    whileHover={{ scale: 1.01 }}
+                    onClick={() => fileRef.current?.click()}
+                    className="border border-dashed border-journey-border/20 rounded-lg p-3 text-center cursor-pointer hover:border-journey-primary/30 hover:bg-journey-surface/10 transition-all group"
+                  >
+                    <input ref={fileRef} type="file" multiple onChange={handleUpload} className="hidden" />
+                    <div className="text-[10px] font-mono text-journey-muted/40 group-hover:text-journey-muted/60 transition-colors">
+                      {uploading ? 'uploading...' : '+ attach files to this session'}
+                    </div>
+                  </motion.div>
+                </div>
               </div>
             </Section>
           </div>

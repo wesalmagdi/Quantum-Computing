@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface MapNode {
@@ -22,29 +22,65 @@ const TYPE_CONFIG = {
 };
 
 export default function KnowledgeMap() {
+  const [dimensions, setDimensions] = useState({ w: 1000, h: 600 });
+  const [nodes, setNodes] = useState<MapNode[]>([]);
   const [hovered, setHovered] = useState<string | null>(null);
-  const [dimensions, setDimensions] = useState({ w: 800, h: 600 });
 
   useEffect(() => {
-    const w = Math.min(window.innerWidth - 80, 1200);
+    const w = Math.max(800, window.innerWidth - 80);
     const h = Math.max(500, window.innerHeight - 200);
     setDimensions({ w, h });
-  }, []);
 
-  const nodes: MapNode[] = useMemo(() => {
-    const { w, h } = dimensions;
-    return [
-      { id: 'project', label: 'Grad Project', type: 'meeting', x: w * 0.5, y: h * 0.12, radius: 34, color: '#818cf8', connections: ['m1', 'concept-qrl', 'note-intro'] },
-      { id: 'm1', label: 'Meeting 1: Kickoff', type: 'meeting', x: w * 0.22, y: h * 0.35, radius: TYPE_CONFIG.meeting.radius, color: TYPE_CONFIG.meeting.color, connections: ['m2', 'concept-nisq', 'ref-sciam'] },
-      { id: 'm2', label: 'Meeting 2: QRL & Direction', type: 'meeting', x: w * 0.68, y: h * 0.38, radius: TYPE_CONFIG.meeting.radius, color: TYPE_CONFIG.meeting.color, connections: ['concept-qrl', 'concept-simulation', 'ref-papers'] },
-      { id: 'concept-nisq', label: 'NISQ+ Era', type: 'concept', x: w * 0.08, y: h * 0.55, radius: TYPE_CONFIG.concept.radius, color: TYPE_CONFIG.concept.color, connections: [] },
-      { id: 'concept-qrl', label: 'Quantum RL', type: 'concept', x: w * 0.42, y: h * 0.52, radius: TYPE_CONFIG.concept.radius, color: TYPE_CONFIG.concept.color, connections: ['concept-simulation'] },
-      { id: 'concept-simulation', label: 'Quantum Simulation', type: 'concept', x: w * 0.78, y: h * 0.55, radius: TYPE_CONFIG.concept.radius, color: TYPE_CONFIG.concept.color, connections: [] },
-      { id: 'note-intro', label: 'Intro to QC', type: 'note', x: w * 0.32, y: h * 0.78, radius: TYPE_CONFIG.note.radius, color: TYPE_CONFIG.note.color, connections: ['concept-nisq'] },
-      { id: 'ref-sciam', label: 'Scientific American', type: 'reference', x: w * 0.12, y: h * 0.72, radius: TYPE_CONFIG.reference.radius, color: TYPE_CONFIG.reference.color, connections: [] },
-      { id: 'ref-papers', label: 'Research Papers', type: 'reference', x: w * 0.62, y: h * 0.75, radius: TYPE_CONFIG.reference.radius, color: TYPE_CONFIG.reference.color, connections: [] },
+    const initialNodes: MapNode[] = [
+      {
+        id: 'project', label: 'Grad Project', type: 'meeting',
+        x: w * 0.5, y: h * 0.15, radius: 34, color: '#818cf8',
+        connections: ['m1', 'concept-qrl', 'note-intro'],
+      },
+      {
+        id: 'm1', label: 'Meeting 1: Kickoff', type: 'meeting',
+        x: w * 0.25, y: h * 0.38, radius: TYPE_CONFIG.meeting.radius, color: TYPE_CONFIG.meeting.color,
+        connections: ['m2', 'concept-nisq', 'ref-sciam'],
+      },
+      {
+        id: 'm2', label: 'Meeting 2: QRL & Direction', type: 'meeting',
+        x: w * 0.65, y: h * 0.42, radius: TYPE_CONFIG.meeting.radius, color: TYPE_CONFIG.meeting.color,
+        connections: ['concept-qrl', 'concept-simulation', 'ref-papers'],
+      },
+      {
+        id: 'concept-nisq', label: 'NISQ+ Era', type: 'concept',
+        x: w * 0.08, y: h * 0.55, radius: TYPE_CONFIG.concept.radius, color: TYPE_CONFIG.concept.color,
+        connections: [],
+      },
+      {
+        id: 'concept-qrl', label: 'Quantum RL', type: 'concept',
+        x: w * 0.45, y: h * 0.55, radius: TYPE_CONFIG.concept.radius, color: TYPE_CONFIG.concept.color,
+        connections: ['concept-simulation'],
+      },
+      {
+        id: 'concept-simulation', label: 'Quantum Simulation', type: 'concept',
+        x: w * 0.78, y: h * 0.58, radius: TYPE_CONFIG.concept.radius, color: TYPE_CONFIG.concept.color,
+        connections: [],
+      },
+      {
+        id: 'note-intro', label: 'Intro to QC', type: 'note',
+        x: w * 0.35, y: h * 0.78, radius: TYPE_CONFIG.note.radius, color: TYPE_CONFIG.note.color,
+        connections: ['concept-nisq'],
+      },
+      {
+        id: 'ref-sciam', label: 'Scientific American', type: 'reference',
+        x: w * 0.15, y: h * 0.72, radius: TYPE_CONFIG.reference.radius, color: TYPE_CONFIG.reference.color,
+        connections: [],
+      },
+      {
+        id: 'ref-papers', label: 'Research Papers', type: 'reference',
+        x: w * 0.6, y: h * 0.75, radius: TYPE_CONFIG.reference.radius, color: TYPE_CONFIG.reference.color,
+        connections: [],
+      },
     ];
-  }, [dimensions]);
+
+    setNodes(initialNodes);
+  }, []);
 
   const getConnected = (nodeId: string): Set<string> => {
     const connected = new Set<string>([nodeId]);
@@ -58,36 +94,44 @@ export default function KnowledgeMap() {
     return connected;
   };
 
+  if (nodes.length === 0) {
+    return (
+      <div className="max-w-5xl mx-auto pb-16">
+        <div className="border-b border-journey-border/30 px-4 md:px-8 py-6">
+          <h1 className="text-xl font-bold text-journey-text font-mono">◈ Knowledge Map</h1>
+        </div>
+        <div className="flex items-center justify-center min-h-[40vh]">
+          <span className="text-journey-muted/40 font-mono text-xs">Initializing network...</span>
+        </div>
+      </div>
+    );
+  }
+
+  const connectedSet = hovered ? getConnected(hovered) : null;
+
   return (
     <div className="max-w-5xl mx-auto pb-16">
       <div className="border-b border-journey-border/30 px-4 md:px-8 py-6">
         <div className="flex items-center gap-2 text-[10px] font-mono text-journey-muted mb-2">
           <span className="w-1.5 h-1.5 rounded-full bg-journey-primary" style={{ boxShadow: '0 0 6px rgba(129,140,248,0.4)' }} />
-          <span className="uppercase tracking-wider">Network Visualization</span>
+          <span className="uppercase tracking-wider">Network</span>
+          <span className="text-journey-border/30">/</span>
+          <span>{nodes.length} nodes</span>
         </div>
-        <h1 className="text-xl md:text-2xl font-bold text-journey-text font-mono tracking-tight">
-          <span className="text-journey-primary">◈</span> Knowledge Map
-        </h1>
-        <p className="text-xs text-journey-muted/60 mt-1 font-mono">
-          {nodes.length} nodes · exploring connections between research sessions, concepts, and references
-        </p>
+        <h1 className="text-xl font-bold text-journey-text font-mono">◈ Knowledge Map</h1>
       </div>
 
       <div className="px-4 md:px-8 mt-6">
         <div className="border border-journey-border/20 rounded-lg bg-journey-card/20 overflow-hidden relative"
-          style={{ minHeight: dimensions.h }}
-        >
+          style={{ minHeight: dimensions.h }}>
           <svg width={dimensions.w} height={dimensions.h} className="w-full" style={{ minHeight: dimensions.h }}>
             <defs>
-              <pattern id="kgrid" width="30" height="30" patternUnits="userSpaceOnUse">
-                <circle cx="15" cy="15" r="0.5" fill="rgba(129,140,248,0.08)" />
+              <pattern id="kgrid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <circle cx="20" cy="20" r="0.5" fill="rgba(129,140,248,0.06)" />
               </pattern>
               <filter id="kglow">
-                <feGaussianBlur stdDeviation="3" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
+                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
               </filter>
             </defs>
             <rect width={dimensions.w} height={dimensions.h} fill="url(#kgrid)" />
@@ -97,16 +141,14 @@ export default function KnowledgeMap() {
               node.connections.map(targetId => {
                 const target = nodes.find(n => n.id === targetId);
                 if (!target) return null;
-                const connected = hovered ? getConnected(hovered) : new Set(nodes.map(n => n.id));
-                const isConnected = connected.has(node.id) && connected.has(targetId);
+                const isHighlighted = !connectedSet || (connectedSet.has(node.id) && connectedSet.has(targetId));
                 return (
-                  <line
-                    key={`${node.id}-${targetId}`}
+                  <line key={`c-${node.id}-${targetId}`}
                     x1={node.x} y1={node.y}
                     x2={target.x} y2={target.y}
-                    stroke={isConnected && hovered ? node.color : 'rgba(129,140,248,0.08)'}
-                    strokeWidth={isConnected && hovered ? 1.5 : 0.5}
-                    opacity={isConnected || !hovered ? (isConnected ? 0.5 : 0.3) : 0.1}
+                    stroke={isHighlighted ? node.color : 'rgba(129,140,248,0.06)'}
+                    strokeWidth={isHighlighted ? 1.5 : 0.5}
+                    opacity={isHighlighted ? 0.5 : 0.2}
                   />
                 );
               })
@@ -115,62 +157,37 @@ export default function KnowledgeMap() {
             {/* Nodes */}
             {nodes.map(node => {
               const cfg = TYPE_CONFIG[node.type];
-              const connected = hovered ? getConnected(hovered) : new Set(nodes.map(n => n.id));
               const isHovered = hovered === node.id;
-              const isConnected = connected.has(node.id);
-              const opacity = !hovered || isConnected ? 1 : 0.15;
+              const isVisible = !connectedSet || connectedSet.has(node.id);
+              const opacity = isVisible ? 1 : 0.15;
 
               return (
-                <g
-                  key={node.id}
+                <g key={node.id}
                   onMouseEnter={() => setHovered(node.id)}
                   onMouseLeave={() => setHovered(null)}
                   style={{ cursor: 'pointer' }}
                   opacity={opacity}
                 >
-                  {/* Outer glow ring when hovered */}
                   {isHovered && (
-                    <circle
-                      cx={node.x} cy={node.y}
-                      r={node.radius + 8}
-                      fill="none"
-                      stroke={node.color}
-                      strokeWidth="1"
-                      opacity="0.4"
-                    />
+                    <circle cx={node.x} cy={node.y} r={node.radius + 10}
+                      fill="none" stroke={node.color} strokeWidth="1" opacity="0.25">
+                      <animate attributeName="r" from={node.radius + 10} to={node.radius + 16} dur="1.5s" repeatCount="indefinite" />
+                      <animate attributeName="opacity" from="0.25" to="0.05" dur="1.5s" repeatCount="indefinite" />
+                    </circle>
                   )}
-
-                  {/* Node circle */}
-                  <circle
-                    cx={node.x} cy={node.y}
-                    r={node.radius}
-                    fill={`${node.color}18`}
-                    stroke={node.color}
-                    strokeWidth={isHovered ? 2 : isConnected && hovered ? 1.5 : 1}
+                  <circle cx={node.x} cy={node.y} r={node.radius}
+                    fill={`${node.color}15`} stroke={node.color}
+                    strokeWidth={isHovered ? 2 : 1}
                     filter={isHovered ? 'url(#kglow)' : undefined}
                   />
-
-                  {/* Icon */}
-                  <text
-                    x={node.x} y={node.y + 1}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fill={node.color}
-                    fontSize={node.type === 'meeting' ? '16' : '12'}
-                    fontFamily="monospace"
-                  >
+                  <text x={node.x} y={node.y + 1} textAnchor="middle" dominantBaseline="middle"
+                    fill={node.color} fontSize={node.type === 'meeting' ? '16' : '12'} fontFamily="monospace">
                     {cfg.icon}
                   </text>
-
-                  {/* Label */}
-                  <text
-                    x={node.x} y={node.y + node.radius + 14}
-                    textAnchor="middle"
-                    fill={isHovered || (hovered && isConnected) ? node.color : 'rgba(226,232,240,0.35)'}
-                    fontSize="9"
-                    fontFamily="monospace"
-                  >
-                    {node.label.length > 22 ? node.label.slice(0, 20) + '…' : node.label}
+                  <text x={node.x} y={node.y + node.radius + 14} textAnchor="middle"
+                    fill={isHovered ? node.color : 'rgba(226,232,240,0.35)'}
+                    fontSize="9" fontFamily="monospace">
+                    {node.label.length > 18 ? node.label.slice(0, 16) + '…' : node.label}
                   </text>
                 </g>
               );
@@ -189,7 +206,7 @@ export default function KnowledgeMap() {
         </div>
 
         <div className="mt-4 text-[9px] font-mono text-journey-muted/30 text-center">
-          Hover nodes to explore connections · The graph grows as your project expands
+          Hover nodes to explore connections · The knowledge graph grows as your project expands
         </div>
       </div>
     </div>

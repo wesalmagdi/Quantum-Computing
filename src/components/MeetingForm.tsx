@@ -15,6 +15,7 @@ export default function MeetingForm({ onSaved, onCancel }: {
   const [newItem, setNewItem] = useState('');
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -32,14 +33,16 @@ export default function MeetingForm({ onSaved, onCancel }: {
     const files = e.target.files;
     if (!files) return;
     setUploading(true);
+    setUploadError('');
     for (const file of Array.from(files)) {
       const formData = new FormData();
       formData.append('file', file);
       try {
         const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (!res.ok) { setUploadError(`Upload failed: ${res.status}`); continue; }
         const data = await res.json();
         setAttachments(prev => [...prev, { url: data.url, name: data.name }]);
-      } catch {}
+      } catch (err) { setUploadError('Upload failed — check console'); console.error(err); }
     }
     setUploading(false);
     if (fileRef.current) fileRef.current.value = '';
@@ -139,6 +142,7 @@ export default function MeetingForm({ onSaved, onCancel }: {
           <label className="text-[10px] font-mono text-journey-muted/60 uppercase tracking-wider mb-1.5 block">
             Attachments {attachments.length > 0 && <span className="text-journey-primary/60">({attachments.length})</span>}
           </label>
+          {uploadError && <div className="text-[9px] font-mono text-rose-400/70 mb-1.5">{uploadError}</div>}
           <motion.div whileHover={{ scale: 1.01 }}
             onClick={() => fileRef.current?.click()}
             className="border border-dashed border-journey-border/20 rounded-lg p-4 text-center cursor-pointer hover:border-journey-primary/30 hover:bg-journey-surface/10 transition-all group"

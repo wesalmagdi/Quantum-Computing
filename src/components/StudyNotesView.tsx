@@ -80,8 +80,8 @@ export default function StudyNotesView() {
         </header>
 
         {/* Notebook content */}
-        <main className="p-4 md:p-6 lg:p-8 max-w-4xl">
-          <div className="border-l-2 border-journey-border/10 pl-4 md:pl-6">
+        <main className="p-4 md:p-6 lg:p-8">
+          <div className="border-l border-journey-border/10 pl-5 md:pl-8">
             {moduleComponents[activeModule] || <ModuleIntro />}
           </div>
         </main>
