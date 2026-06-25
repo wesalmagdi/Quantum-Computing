@@ -43,32 +43,56 @@ export default function StudyNotesView() {
       />
 
       <div className={`transition-all duration-300 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-20'}`}>
-        <header className="sticky top-0 z-10 bg-journey-card/80 backdrop-blur-md border-b border-journey-border">
-          <div className="flex items-center gap-3 px-4 py-3">
+        {/* Header — Lab notebook bar */}
+        <header className="sticky top-0 z-10 border-b border-journey-border/20 bg-journey-bg/90 backdrop-blur-xl">
+          <div className="flex items-center gap-3 px-4 py-2.5">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden p-2 -ml-2 text-journey-muted hover:text-journey-text"
+              className="lg:hidden p-1.5 -ml-1.5 text-journey-muted hover:text-journey-text"
             >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M3 5h12M3 9h12M3 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
             </button>
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-lg text-journey-primary">{'\u25C8'}</span>
-              <span className="font-medium text-journey-text">{currentModule.label}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono text-journey-primary/60">◇</span>
+              <span className="text-xs font-mono font-medium text-journey-text">{currentModule.label}</span>
             </div>
-            <span className="text-[10px] text-journey-muted ml-auto">
-              {MODULES.findIndex(m => m.id === activeModule) + 1} / {MODULES.length}
-            </span>
+            <div className="flex items-center gap-1.5 ml-auto">
+              <span className="text-[9px] font-mono text-journey-muted/40">
+                {String(MODULES.findIndex(m => m.id === activeModule) + 1).padStart(2, '0')}/{String(MODULES.length).padStart(2, '0')}
+              </span>
+              <div className="flex gap-0.5">
+                {MODULES.map((m, i) => (
+                  <div
+                    key={m.id}
+                    className={`w-1.5 h-1.5 rounded-full transition-colors cursor-pointer ${
+                      i <= MODULES.findIndex(mod => mod.id === activeModule)
+                        ? 'bg-journey-primary/60'
+                        : 'bg-journey-border/20'
+                    }`}
+                    onClick={() => setActiveModule(m.id)}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </header>
 
-        <main className="p-4 md:p-6 lg:p-8">
-          {moduleComponents[activeModule] || <ModuleIntro />}
+        {/* Notebook content */}
+        <main className="p-4 md:p-6 lg:p-8 max-w-4xl">
+          <div className="border-l-2 border-journey-border/10 pl-4 md:pl-6">
+            {moduleComponents[activeModule] || <ModuleIntro />}
+          </div>
         </main>
 
-        <footer className="text-center text-xs text-journey-muted py-6 border-t border-journey-border mt-12">
-          Our Grad Project Journey · Built with Next.js · Three.js · Framer Motion
+        {/* Footer */}
+        <footer className="text-center border-t border-journey-border/10 py-4 mt-8">
+          <div className="flex items-center justify-center gap-2 text-[9px] font-mono text-journey-muted/30">
+            <span>◆</span>
+            <span>Quantum Journal · Notebook Entry {String(MODULES.findIndex(m => m.id === activeModule) + 1).padStart(2, '0')}</span>
+            <span>◆</span>
+          </div>
         </footer>
       </div>
     </div>

@@ -33,7 +33,7 @@ export interface JourneyInfo {
   description: string;
 }
 
-export type TabId = 'overview' | 'meetings' | 'study';
+export type TabId = 'overview' | 'meetings' | 'study' | 'knowledge';
 
 export interface Tab {
   id: TabId;

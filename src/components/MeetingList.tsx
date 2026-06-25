@@ -6,23 +6,17 @@ import type { Meeting } from '@/lib/data';
 import MeetingDetail from './MeetingDetail';
 import MeetingForm from './MeetingForm';
 
-const cardColors = [
-  { border: 'border-l-indigo-400', dot: 'bg-indigo-400' },
-  { border: 'border-l-amber-400', dot: 'bg-amber-400' },
-  { border: 'border-l-emerald-400', dot: 'bg-emerald-400' },
-  { border: 'border-l-rose-400', dot: 'bg-rose-400' },
-  { border: 'border-l-cyan-400', dot: 'bg-cyan-400' },
-];
-
 const container = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.1 } },
+  show: { transition: { staggerChildren: 0.08 } },
 };
 
 const item = {
-  hidden: { opacity: 0, y: 30, scale: 0.96 },
-  show: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 200, damping: 18 } },
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 180, damping: 18 } },
 };
+
+const entryColors = ['#818cf8', '#22d3ee', '#34d399', '#f472b6', '#fbbf24'];
 
 export default function MeetingList() {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
@@ -53,55 +47,55 @@ export default function MeetingList() {
   const attachTotal = meetings.reduce((s, m) => s + m.attachments.length, 0);
   const pct = allTotal > 0 ? Math.round((doneTotal / allTotal) * 100) : 0;
 
-  const stats = [
-    { emoji: '📋', label: 'Meetings', value: meetings.length },
-    { emoji: '✅', label: 'Tasks Done', value: `${doneTotal}/${allTotal}` },
-    { emoji: '📎', label: 'Attachments', value: attachTotal },
-    { emoji: '📈', label: 'Completion', value: `${pct}%` },
-  ];
-
   return (
-    <div className="max-w-3xl mx-auto p-4 md:p-8">
+    <div className="max-w-4xl mx-auto pb-16">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: 'spring', stiffness: 200 }}
-        className="flex items-center justify-between mb-6"
-      >
-        <div>
-          <h1 className="text-2xl font-bold text-journey-text flex items-center gap-2">
-            <span className="text-2xl">📋</span> Meetings
-          </h1>
-          <p className="text-sm text-journey-muted mt-0.5">
-            {meetings.length} meeting{meetings.length !== 1 ? 's' : ''}
-            {allTotal > 0 && ` · ${doneTotal}/${allTotal} tasks done`}
-          </p>
-        </div>
-        <motion.button
-          whileHover={{ scale: 1.05, rotate: 2 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setShowForm(true)}
-          className="px-5 py-2.5 bg-gradient-to-r from-journey-primary to-indigo-500 text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-journey-primary/30 transition-all shadow-sm"
-        >
-          + New Meeting
-        </motion.button>
-      </motion.div>
-
-      {/* Stats bar */}
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-        className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6"
-      >
-        {stats.map((s, i) => (
-          <motion.div key={s.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + i * 0.06 }}
-            className="bg-journey-card rounded-2xl border border-journey-border p-4 text-center hover:shadow-sm transition-all"
+      <div className="border-b border-journey-border/30 px-4 md:px-8 py-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="flex items-center gap-2 text-[10px] font-mono text-journey-muted mb-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-journey-primary" style={{ boxShadow: '0 0 6px rgba(129,140,248,0.4)' }} />
+              <span className="uppercase tracking-wider">Research Log</span>
+              <span className="text-journey-border/40">/</span>
+              <span>Sessions Archive</span>
+            </div>
+            <h1 className="text-xl md:text-2xl font-bold text-journey-text font-mono tracking-tight">
+              <span className="text-journey-primary">◆</span> Meetings
+            </h1>
+            <p className="text-xs text-journey-muted/60 mt-1 font-mono">
+              {meetings.length} session{meetings.length !== 1 ? 's' : ''} archived
+              {allTotal > 0 && <span> · {doneTotal}/{allTotal} action items closed · {pct}% completion</span>}
+              {attachTotal > 0 && <span> · {attachTotal} attachment{attachTotal !== 1 ? 's' : ''}</span>}
+            </p>
+          </div>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setShowForm(true)}
+            className="px-4 py-2 text-xs font-mono font-bold rounded-lg border border-journey-primary/30 bg-journey-primary/10 text-journey-primary hover:bg-journey-primary/20 transition-all flex items-center gap-2"
           >
-            <div className="text-lg mb-1">{s.emoji}</div>
-            <div className="text-lg font-bold text-journey-text">{s.value}</div>
-            <div className="text-[10px] text-journey-muted uppercase tracking-wider">{s.label}</div>
-          </motion.div>
-        ))}
-      </motion.div>
+            <span>+</span>
+            <span>New Session</span>
+          </motion.button>
+        </div>
+      </div>
+
+      {/* Stats — research metrics */}
+      {meetings.length > 0 && (
+        <div className="grid grid-cols-4 gap-px bg-journey-border/20 mx-4 md:mx-8 border-b border-journey-border/20">
+          {[
+            { value: meetings.length, label: 'Sessions', color: '#818cf8' },
+            { value: `${doneTotal}/${allTotal}`, label: 'Tasks', color: '#22d3ee' },
+            { value: attachTotal, label: 'Attachments', color: '#34d399' },
+            { value: `${pct}%`, label: 'Progress', color: '#fbbf24' },
+          ].map((s, i) => (
+            <div key={s.label} className="bg-journey-card/30 p-3 text-center border border-journey-border/20">
+              <div className="text-sm font-bold text-journey-text font-mono" style={{ color: s.color }}>{s.value}</div>
+              <div className="text-[9px] font-mono text-journey-muted uppercase tracking-wider mt-0.5">{s.label}</div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Form */}
       <AnimatePresence>
@@ -111,73 +105,90 @@ export default function MeetingList() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mb-6 overflow-hidden"
+            className="overflow-hidden mx-4 md:mx-8"
           >
             <MeetingForm onSaved={handleSaved} onCancel={() => setShowForm(false)} />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Empty */}
+      {/* Meeting entries */}
       {meetings.length === 0 && !showForm ? (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center py-20 text-journey-muted"
-        >
-          <motion.div
-            animate={{ y: [0, -8, 0], rotate: [0, 5, 0] }}
-            transition={{ repeat: Infinity, duration: 3 }}
-            className="text-6xl mb-4"
-          >📋</motion.div>
-          <p className="text-lg font-medium text-journey-text mb-1">No meetings recorded yet</p>
-          <p className="text-sm">Click the button above to document your first session!</p>
-        </motion.div>
+        <div className="text-center py-20 px-4">
+          <div className="text-2xl mb-3 opacity-30">◇</div>
+          <p className="text-sm text-journey-muted font-mono">No research sessions recorded</p>
+          <p className="text-[11px] text-journey-muted/50 font-mono mt-1">Begin documenting your first meeting</p>
+        </div>
       ) : (
-        <motion.div variants={container} initial="hidden" animate="show" className="space-y-4">
-          {meetings.map((m, idx) => (
-            <motion.div key={m.id} variants={item} layout>
-              <motion.button
-                whileHover={{ scale: 1.01, y: -2 }}
-                whileTap={{ scale: 0.99 }}
-                onClick={() => setSelected(m)}
-                className={`w-full text-left bg-journey-card rounded-2xl border border-journey-border border-l-4 ${cardColors[idx % cardColors.length].border} p-5 shadow-sm hover:shadow-lg transition-all group relative overflow-hidden`}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-journey-primary/[0.02] to-transparent" />
-                <div className="flex items-start justify-between gap-4 relative">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className={`w-2 h-2 rounded-full ${cardColors[idx % cardColors.length].dot}`} />
-                      <h3 className="font-bold text-journey-text group-hover:text-journey-primary transition-colors">{m.title}</h3>
+        <motion.div variants={container} initial="hidden" animate="show" className="mx-4 md:mx-8 mt-6 space-y-2">
+          {meetings.map((m, idx) => {
+            const color = entryColors[idx % entryColors.length];
+            const done = m.actionItems.filter(a => a.done).length;
+            const total = m.actionItems.length;
+            return (
+              <motion.div key={m.id} variants={item} layout>
+                <motion.button
+                  whileHover={{ x: 3 }}
+                  whileTap={{ scale: 0.99 }}
+                  onClick={() => setSelected(m)}
+                  className="w-full text-left bg-journey-card/50 hover:bg-journey-card/70 rounded-lg border border-journey-border/20 hover:border-journey-border/50 transition-all p-4 group relative overflow-hidden"
+                >
+                  {/* Left color indicator */}
+                  <div
+                    className="absolute left-0 top-0 bottom-0 w-[2px] opacity-60 group-hover:opacity-100 transition-opacity"
+                    style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}40` }}
+                  />
+
+                  <div className="flex items-start gap-3 pl-2">
+                    {/* Entry number */}
+                    <div className="shrink-0 w-8 text-right">
+                      <span className="text-[10px] font-mono text-journey-muted/40">{String(idx + 1).padStart(2, '0')}</span>
                     </div>
-                    <p className="text-xs text-journey-muted font-mono">{m.date}</p>
-                    <p className="text-xs text-journey-muted mt-2 line-clamp-2">{m.discussed}</p>
-                  </div>
-                  <div className="shrink-0 flex flex-col items-end gap-2">
-                    <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      className="text-[10px] font-bold text-journey-muted bg-journey-surface px-3 py-1 rounded-full"
-                    >
-                      {m.actionItems.filter(a => a.done).length}/{m.actionItems.length} ✓
-                    </motion.div>
-                    {m.attachments.length > 0 && (
-                      <div className="flex items-center gap-1">
-                        <span className="text-[10px] text-journey-muted">{m.attachments.length} files</span>
-                        <div className="flex -space-x-1">
-                          {m.attachments.slice(0, 3).map((a, ai) => (
-                            <span key={ai} className="text-xs relative" title={a.name}>
-                              {a.url.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i) ? '🖼️' : a.name.match(/\.pdf$/i) ? '📄' : '📎'}
-                            </span>
-                          ))}
-                          {m.attachments.length > 3 && <span className="text-[9px] text-journey-muted ml-1">+{m.attachments.length - 3}</span>}
-                        </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 text-[10px] font-mono text-journey-muted/50 mb-0.5">
+                        <span>{m.date}</span>
+                        {total > 0 && <span>· {done}/{total} closed</span>}
                       </div>
-                    )}
+                      <h3 className="text-sm font-bold text-journey-text group-hover:text-journey-primary transition-colors">
+                        {m.title}
+                      </h3>
+                      <p className="text-xs text-journey-muted/60 mt-1 line-clamp-1 leading-relaxed">{m.discussed}</p>
+
+                      {/* Footer tags */}
+                      <div className="flex items-center gap-2 mt-2">
+                        {m.attachments.length > 0 && (
+                          <span className="text-[9px] font-mono text-journey-muted/50 flex items-center gap-1">
+                            📎 {m.attachments.length}
+                          </span>
+                        )}
+                        {total > 0 && (
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-12 h-1 rounded-full bg-journey-surface overflow-hidden">
+                              <div
+                                className="h-full rounded-full transition-all duration-500"
+                                style={{
+                                  width: `${Math.round((done / total) * 100)}%`,
+                                  backgroundColor: color,
+                                }}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Arrow */}
+                    <div className="shrink-0 text-journey-muted/20 group-hover:text-journey-primary/40 transition-colors">
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
                   </div>
-                </div>
-              </motion.button>
-            </motion.div>
-          ))}
+                </motion.button>
+              </motion.div>
+            );
+          })}
         </motion.div>
       )}
     </div>

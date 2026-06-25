@@ -6,19 +6,21 @@ import TopTabs from '@/components/TopTabs';
 import TimelineView from '@/components/TimelineView';
 import MeetingList from '@/components/MeetingList';
 import StudyNotesView from '@/components/StudyNotesView';
+import KnowledgeMap from '@/components/KnowledgeMap';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import type { TabId } from '@/lib/data';
 
 const variants = {
-  enter: { opacity: 0, y: 20, scale: 0.98 },
-  center: { opacity: 1, y: 0, scale: 1 },
-  exit: { opacity: 0, y: -10, scale: 0.98 },
+  enter: { opacity: 0, y: 12 },
+  center: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -8 },
 };
 
-const views: Record<TabId, React.ReactNode> = {
+const views: Record<string, React.ReactNode> = {
   overview: <TimelineView />,
   meetings: <MeetingList />,
   study: <StudyNotesView />,
+  knowledge: <KnowledgeMap />,
 };
 
 export default function Home() {
@@ -37,7 +39,7 @@ export default function Home() {
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{ duration: 0.25, ease: 'easeInOut' }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
           >
             {views[activeTab]}
           </motion.div>
