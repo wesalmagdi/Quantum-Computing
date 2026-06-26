@@ -4,6 +4,15 @@ import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Attachment } from '@/lib/data';
 
+function readFileAsDataURL(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function MeetingForm({ onSaved, onCancel }: {
   onSaved: () => void;
   onCancel: () => void;
@@ -31,18 +40,17 @@ export default function MeetingForm({ onSaved, onCancel }: {
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files) return;
+    if (!files || files.length === 0) return;
     setUploading(true);
     setUploadError('');
     for (const file of Array.from(files)) {
-      const formData = new FormData();
-      formData.append('file', file);
       try {
-        const res = await fetch('/api/upload', { method: 'POST', body: formData });
-        if (!res.ok) { setUploadError(`Upload failed: ${res.status}`); continue; }
-        const data = await res.json();
-        setAttachments(prev => [...prev, { url: data.url, name: data.name }]);
-      } catch (err) { setUploadError('Upload failed — check console'); console.error(err); }
+        const dataUrl = await readFileAsDataURL(file);
+        setAttachments(prev => [...prev, { url: dataUrl, name: file.name }]);
+      } catch (err) {
+        setUploadError(`Failed to read ${file.name}`);
+        console.error(err);
+      }
     }
     setUploading(false);
     if (fileRef.current) fileRef.current.value = '';
@@ -56,19 +64,23 @@ export default function MeetingForm({ onSaved, onCancel }: {
     e.preventDefault();
     if (!title.trim() || !date) return;
     setSaving(true);
-    await fetch('/api/meetings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        title: title.trim(),
-        date,
-        discussed: discussed.trim(),
-        actionItems: actionItems.map(t => ({ text: t, done: false })),
-        attachments,
-      }),
-    });
+    try {
+      await fetch('/api/meetings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: title.trim(),
+          date,
+          discussed: discussed.trim(),
+          actionItems: actionItems.map(t => ({ text: t, done: false })),
+          attachments,
+        }),
+      });
+      onSaved();
+    } catch (err) {
+      console.error('Save failed', err);
+    }
     setSaving(false);
-    onSaved();
   };
 
   return (
@@ -80,28 +92,24 @@ export default function MeetingForm({ onSaved, onCancel }: {
       onSubmit={handleSubmit}
       className="border border-journey-border/30 rounded-lg bg-journey-card/40 p-5 mb-6"
     >
-      {/* Form header */}
       <div className="flex items-center gap-2 text-[10px] font-mono text-journey-muted/50 mb-4 pb-3 border-b border-journey-border/10">
         <span className="w-1.5 h-1.5 rounded-full bg-journey-accent" style={{ boxShadow: '0 0 6px rgba(34,211,238,0.4)' }} />
         <span className="uppercase tracking-wider">New Research Session</span>
       </div>
 
       <div className="space-y-4">
-        {/* Title */}
         <div>
           <label className="text-[10px] font-mono text-journey-muted/60 uppercase tracking-wider mb-1.5 block">Title</label>
           <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Sprint Planning — Week 5"
             className="w-full px-3 py-2 text-sm font-mono bg-transparent border border-journey-border/20 rounded focus:outline-none focus:border-journey-primary/40 text-journey-text placeholder:text-journey-muted/20 transition-all" required />
         </div>
 
-        {/* Date */}
         <div>
           <label className="text-[10px] font-mono text-journey-muted/60 uppercase tracking-wider mb-1.5 block">Date</label>
           <input type="date" value={date} onChange={e => setDate(e.target.value)}
             className="w-full px-3 py-2 text-sm font-mono bg-transparent border border-journey-border/20 rounded focus:outline-none focus:border-journey-primary/40 text-journey-text transition-all" required />
         </div>
 
-        {/* Discussion */}
         <div>
           <label className="text-[10px] font-mono text-journey-muted/60 uppercase tracking-wider mb-1.5 block">Discussion Notes</label>
           <textarea value={discussed} onChange={e => setDiscussed(e.target.value)} rows={4}
@@ -109,7 +117,6 @@ export default function MeetingForm({ onSaved, onCancel }: {
             className="w-full px-3 py-2 text-sm font-mono bg-transparent border border-journey-border/20 rounded focus:outline-none focus:border-journey-primary/40 text-journey-text placeholder:text-journey-muted/20 resize-y transition-all" />
         </div>
 
-        {/* Action Items */}
         <div>
           <label className="text-[10px] font-mono text-journey-muted/60 uppercase tracking-wider mb-1.5 block">
             Action Items {actionItems.length > 0 && <span className="text-journey-primary/60">({actionItems.length})</span>}
@@ -137,7 +144,6 @@ export default function MeetingForm({ onSaved, onCancel }: {
           </AnimatePresence>
         </div>
 
-        {/* Attachments */}
         <div>
           <label className="text-[10px] font-mono text-journey-muted/60 uppercase tracking-wider mb-1.5 block">
             Attachments {attachments.length > 0 && <span className="text-journey-primary/60">({attachments.length})</span>}
@@ -149,14 +155,14 @@ export default function MeetingForm({ onSaved, onCancel }: {
           >
             <input ref={fileRef} type="file" multiple onChange={handleUpload} className="hidden" />
             <div className="text-[10px] font-mono text-journey-muted/30 group-hover:text-journey-muted/50 transition-colors">
-              {uploading ? 'uploading...' : '+ click to attach files'}
+              {uploading ? 'reading files...' : '+ click to attach files'}
             </div>
           </motion.div>
           <AnimatePresence>
             {attachments.map((att, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
                 className="flex items-center gap-2 px-2.5 py-1.5 mt-1.5 rounded bg-journey-surface/10 border border-journey-border/10 group">
-                {att.url.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i) ? (
+                {att.url.startsWith('data:image/') ? (
                   <img src={att.url} alt="" className="w-6 h-6 rounded object-cover" />
                 ) : (
                   <span className="text-[10px] text-journey-muted/60">◇</span>
