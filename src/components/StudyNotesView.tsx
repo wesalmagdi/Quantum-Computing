@@ -11,6 +11,7 @@ import ModuleHadamard from '@/modules/ModuleHadamard';
 import ModulePauliX from '@/modules/ModulePauliX';
 import ModuleInterference from '@/modules/ModuleInterference';
 import ModuleSchrodinger from '@/modules/ModuleSchrodinger';
+import ModuleManyBody from '@/modules/ModuleManyBody';
 import ModuleBreak from '@/modules/ModuleBreak';
 import { MODULES } from '@/lib/quantum';
 
@@ -24,6 +25,7 @@ const moduleComponents: Record<string, React.ReactNode> = {
   paulix: <ModulePauliX />,
   interference: <ModuleInterference />,
   schrodinger: <ModuleSchrodinger />,
+  manybody: <ModuleManyBody />,
   break: <ModuleBreak />,
 };
 
