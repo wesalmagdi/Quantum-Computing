@@ -66,6 +66,11 @@ export const MODULES = [
   { id: 'paulix', label: 'Pauli-X Gate', desc: 'Quantum NOT' },
   { id: 'interference', label: 'Interference', desc: 'Waves combining' },
   { id: 'schrodinger', label: "Schr\u00f6dinger Eq.", desc: 'Time evolution' },
-  { id: 'manybody', label: 'Many-Body Terms', desc: 'Excited states & fermions' },
+  { id: 'excitedstates', label: 'Excited States', desc: 'Ground vs excited states' },
+  { id: 'manyfermion', label: 'Many-Fermion', desc: 'Fermions & Pauli principle' },
+  { id: 'wavefunction', label: 'Wave Function', desc: 'Quantum state encoding' },
+  { id: 'operators', label: 'Operators', desc: 'Two-body operators' },
+  { id: 'ansatz', label: 'Ansatz', desc: 'Guess structure & ansätze' },
+  { id: 'unitary', label: 'Unitary Transforms', desc: 'Gates & circuits' },
   { id: 'break', label: 'Break Time', desc: 'Take a break — climb Icy Tower' },
 ];

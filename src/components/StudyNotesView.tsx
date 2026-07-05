@@ -11,7 +11,12 @@ import ModuleHadamard from '@/modules/ModuleHadamard';
 import ModulePauliX from '@/modules/ModulePauliX';
 import ModuleInterference from '@/modules/ModuleInterference';
 import ModuleSchrodinger from '@/modules/ModuleSchrodinger';
-import ModuleManyBody from '@/modules/ModuleManyBody';
+import ModuleExcitedStates from '@/modules/ModuleExcitedStates';
+import ModuleManyFermion from '@/modules/ModuleManyFermion';
+import ModuleWaveFunction from '@/modules/ModuleWaveFunction';
+import ModuleOperators from '@/modules/ModuleOperators';
+import ModuleAnsatz from '@/modules/ModuleAnsatz';
+import ModuleUnitary from '@/modules/ModuleUnitary';
 import ModuleBreak from '@/modules/ModuleBreak';
 import { MODULES } from '@/lib/quantum';
 
@@ -25,7 +30,12 @@ const moduleComponents: Record<string, React.ReactNode> = {
   paulix: <ModulePauliX />,
   interference: <ModuleInterference />,
   schrodinger: <ModuleSchrodinger />,
-  manybody: <ModuleManyBody />,
+  excitedstates: <ModuleExcitedStates />,
+  manyfermion: <ModuleManyFermion />,
+  wavefunction: <ModuleWaveFunction />,
+  operators: <ModuleOperators />,
+  ansatz: <ModuleAnsatz />,
+  unitary: <ModuleUnitary />,
   break: <ModuleBreak />,
 };
 
